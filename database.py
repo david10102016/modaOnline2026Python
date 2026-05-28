@@ -5,26 +5,34 @@ import os
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-class ScalarCursor:
-    """Cursor que permite [0] en fetchone() para queries COUNT/SUM"""
+class Cursor:
     def __init__(self, cur):
         self._cur = cur
 
     def fetchone(self):
-        row = self._cur.fetchone()
+        try:
+            row = self._cur.fetchone()
+        except Exception:
+            return None
         if row is None:
             return None
         return _IndexableDict(row)
 
     def fetchall(self):
-        return self._cur.fetchall()
+        rows = self._cur.fetchall()
+        return [_IndexableDict(r) for r in rows]
+
+    def execute(self, query, params=()):
+        query = query.replace('?', '%s')
+        self._cur.execute(query, params)
+        return self
 
     @property
     def lastrowid(self):
-        return self._cur.fetchone()
+        self._cur.execute("SELECT lastval()")
+        return self._cur.fetchone()[0]
 
 class _IndexableDict(dict):
-    """Diccionario que también soporta acceso por índice numérico"""
     def __getitem__(self, key):
         if isinstance(key, int):
             return list(self.values())[key]
@@ -38,17 +46,16 @@ class Connection:
         query = query.replace('?', '%s')
         cur = self._conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(query, params)
-        return ScalarCursor(cur)
+        return Cursor(cur)
 
     def executemany(self, query, params_list):
         query = query.replace('?', '%s')
         cur = self._conn.cursor()
         cur.executemany(query, params_list)
-        return cur
 
     def cursor(self):
         cur = self._conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        return ScalarCursor(cur)
+        return Cursor(cur)
 
     def commit(self):
         self._conn.commit()
