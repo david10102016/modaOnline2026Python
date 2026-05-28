@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tienda de Ropa - Moda Bolivia | Santa Cruz{% endblock %}</title>
+    
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS Local -->
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary fixed-top" id="navbar-principal">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}" id="logo-tienda">
+                <i class="fas fa-shopping-bag me-2"></i>
+                Moda Bolivia
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}" id="nav-inicio">
+                            <i class="fas fa-home"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown" id="nav-categorias">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-th-large"></i> Categorías
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('buscar', categoria='hombres') }}">
+                                <i class="fas fa-male text-primary"></i> Hombres
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('buscar', categoria='mujeres') }}">
+                                <i class="fas fa-female text-danger"></i> Mujeres
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('buscar', categoria='ninos') }}">
+                                <i class="fas fa-child text-warning"></i> Niños
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('buscar', categoria='ofertas') }}">
+                                <i class="fas fa-fire text-danger"></i> Ofertas
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <!-- Buscador -->
+                <form class="d-flex me-3" action="{{ url_for('buscar') }}" method="GET" id="form-buscar">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Buscar productos..." 
+                           value="{{ request.args.get('q', '') }}">
+                    <button class="btn btn-outline-light" type="submit" id="btn-buscar">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <!-- Enlaces del usuario -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ url_for('carrito') }}" id="nav-carrito">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                                  id="carrito-count" style="font-size: 0.6em;">0</span>
+                        </a>
+                    </li>
+                    
+                    {% if session.user_id %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ session.user_name }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% if session.user_role == 'admin' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin') }}">
+                                        <i class="fas fa-cog"></i> Administrar
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}" id="nav-login">
+                                <i class="fas fa-sign-in-alt"></i> Ingresar
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- Botón Tour Guiado -->
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm ms-2" id="tour-btn">
+                            <i class="fas fa-question-circle"></i> Tour
+                        </button>
+                    </li>
+                    <!-- Botón de Geolocalización -->
+                    <li class="nav-item">
+                        <a href="#location-section" id="gps-btn" class="nav-link">Ubicación GPS</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <!-- Alertas -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-3">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light mt-5" id="footer-tienda">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5 class="text-gradient-primary">
+                        <i class="fas fa-shopping-bag"></i> Moda Bolivia
+                    </h5>
+                    <p class="mb-3">Tu tienda de ropa favorita en Santa Cruz de la Sierra. 
+                       Calidad, estilo y los mejores precios.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-light"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://wa.me/59173138524" class="text-light" target="_blank">
+                            <i class="fab fa-whatsapp fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <h6><i class="fas fa-map-marker-alt"></i> Ubicación</h6>
+                    <p class="mb-2">Av. San Martín, Equipetrol<br>
+                       Santa Cruz de la Sierra, Bolivia</p>
+                    <p class="mb-0">
+                        <i class="fas fa-phone"></i> WhatsApp: 
+                        <a href="https://wa.me/59173138524" class="text-light" target="_blank">
+                            +591 73138524
+                        </a>
+                    </p>
+                </div>
+                
+                <div class="col-md-4">
+                    <h6><i class="fas fa-credit-card"></i> Métodos de Pago</h6>
+                    <p class="mb-2">• WhatsApp (Coordinación directa)</p>
+                    <p class="mb-2">• Transferencia bancaria (QR)</p>
+                    <p class="mb-0">• Pago contra entrega</p>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 Moda Bolivia. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        Desarrollado por JDavid System - Santa Cruz, Bolivia
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Driver Simple Local (nuestra implementación) -->
+    <script src="{{ url_for('static', filename='js/driver-simple.js') }}"></script>
+    <!-- Custom JS Local -->
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    
+    <script>
+        // Actualizar contador del carrito al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarContadorCarrito();
+        });
+        
+        function actualizarContadorCarrito() {
+            fetch('/api/carrito/count')
+                .then(response => response.json())
+                .then(data => {
+                    const contador = document.getElementById('carrito-count');
+                    if (contador) {
+                        contador.textContent = data.count || 0;
+                        contador.style.display = data.count > 0 ? 'block' : 'none';
+                    }
+                })
+                .catch(error => console.log('Error actualizando carrito:', error));
+        }
+        
+        // Mostrar alertas con SweetAlert2
+        {% if get_flashed_messages() %}
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                Swal.fire({
+                    icon: '{{ "error" if category == "error" else "success" if category == "success" else "info" }}',
+                    title: '{{ category|title }}',
+                    text: '{{ message }}',
+                    timer: 4000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            {% endfor %}
+        {% endif %}
+        
+        // Geolocalización (desplazamiento suave)
+        document.getElementById('gps-btn')?.addEventListener('click', () => {
+            const locationSection = document.querySelector('#location-section');
+            if (locationSection) {
+                locationSection.scrollIntoView({ behavior: 'smooth' });
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Ubicación',
+                    text: 'Desplazándote al mapa.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: 'Sección de ubicación no disponible en esta página.',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

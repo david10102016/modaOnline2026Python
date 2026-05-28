@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Comprobante - Orden #{{ orden_id }} - Moda Bolivia{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient-success text-white text-center">
+                    <h6 class="mb-1">Sistema de Pagos DavidUR System</h6>
+                    <h4 class="mb-0"><i class="fas fa-receipt"></i> {{ tipo_documento }} - Orden #{{ orden_id }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <p class="mb-0"><strong>Fecha:</strong> {{ fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                        <p><strong>Estado:</strong> 
+                            <span class="badge bg-{{ 'warning' if estado == 'pendiente' else 'success' if estado in ['pagado', 'completado'] else 'danger' if estado == 'cancelado' else 'info' }}">
+                                {{ estado|title }}
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold"><i class="fas fa-user"></i> Datos del Cliente</h5>
+                        <p><strong>Nombre:</strong> {{ nombre }}</p>
+                        <p><strong>Teléfono:</strong> +591 {{ telefono }}</p>
+                        <p><strong>Método de Pago:</strong> 
+                            <span class="badge bg-secondary">{{ metodo_pago|title if metodo_pago else 'No especificado' }}</span>
+                        </p>
+                        {% if tipo_documento == 'Factura' and (detalles and detalles.get('facturacion')) %}
+                            <p><strong>NIT:</strong> {{ detalles.facturacion.get('nit', '') }}</p>
+                            <p><strong>Carnet:</strong> {{ detalles.facturacion.get('ci', '') }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold"><i class="fas fa-truck"></i> Método de Entrega</h5>
+                        <p><strong>Método:</strong> {{ detalles.entrega.metodo | capitalize if detalles and detalles.get('entrega') and detalles.entrega.get('metodo') else 'No especificado' }}</p>
+                        {% if detalles and detalles.get('entrega') and detalles.entrega.get('metodo') == 'envio' %}
+                            <p><strong>Dirección:</strong> {{ detalles.entrega.get('direccion', '') }}, {{ detalles.entrega.get('ciudad', '') }}</p>
+                            <p><strong>Costo de Envío:</strong> Bs. {{ "%.2f"|format(detalles.entrega.get('costo', 0)) }}</p>
+                        {% else %}
+                            <p><strong>Costo de Envío:</strong> Gratis</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold"><i class="fas fa-shopping-bag"></i> Detalle del Pedido</h5>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if detalles and detalles.get('items') %}
+                                    {% for item in detalles['items'] %}
+                                        <tr>
+                                            <td>{{ item.producto }}</td>
+                                            <td>{{ item.cantidad }}</td>
+                                            <td>Bs. {{ "%.2f"|format(item.precio_unitario) }}</td>
+                                            <td>Bs. {{ "%.2f"|format(item.subtotal) }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No hay detalles de productos disponibles. Detalles recibido: {{ detalles|default('None') }}</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mb-4 text-end">
+                        <h5 class="fw-bold">Total a Pagar: <span class="text-success">Bs. {{ "%.2f"|format(total) }}</span></h5>
+                    </div>
+
+                    <!-- Instrucciones Dinámicas -->
+                    <div class="mt-4 p-3 border rounded" style="background-color: #f8f9fa;">
+                        {% if estado == 'pendiente' %}
+                            {% if metodo_pago == 'qr_simple' %}
+                                <p class="mb-0"><strong>Instrucciones:</strong> Por favor, realice el pago escaneando el QR a continuación o contacte al <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">+591 73138524</a>. Aguarde la confirmación.</p>
+                            {% else %}
+                                <p class="mb-0"><strong>Instrucciones:</strong> Su pago está pendiente. Contacte al <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">+591 73138524</a> para más detalles.</p>
+                            {% endif %}
+                        {% elif estado == 'pagado' %}
+                            <p class="mb-0"><strong>Instrucciones:</strong> Pago recibido. Estamos preparando su envío. Recibirá una actualización pronto.</p>
+                        {% elif estado == 'enviado' %}
+                            <p class="mb-0"><strong>Instrucciones:</strong> Su pedido ha sido enviado. Puede rastrearlo contactando al <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">+591 73138524</a>.</p>
+                        {% elif estado == 'completado' %}
+                            <p class="mb-0"><strong>Instrucciones:</strong> Su pedido ha sido entregado. ¡Gracias por su compra!</p>
+                        {% elif estado == 'cancelado' %}
+                            <p class="mb-0"><strong>Instrucciones:</strong> Esta orden ha sido cancelada. Para más información, contacte al <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">+591 73138524</a>.</p>
+                        {% else %}
+                            <p class="mb-0"><strong>Instrucciones:</strong> Aguarde la confirmación del administrador.</p>
+                        {% endif %}
+                    </div>
+
+                    {% if metodo_pago == 'qr_simple' %}
+                    <div class="mb-4 text-center">
+                        <h5 class="fw-bold"><i class="fas fa-qrcode"></i> Código QR para Pago</h5>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Orden%20%23{{ orden_id }}%20-%20Total:%20Bs.%20{{ total }}%20-%20Tel:%20{{ telefono }}" alt="QR Code for Order" class="qr-code" style="width: 200px; height: 200px;">
+                    </div>
+                    {% endif %}
+
+                    <div class="text-center">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    <p class="mb-0">Contacto: <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">
+                        <i class="fab fa-whatsapp text-success me-1"></i> +591 73138524
+                    </a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

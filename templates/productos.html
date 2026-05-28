@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Productos - Moda Bolivia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .product-card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .table-responsive {
+            margin-top: 10px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .table th {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            text-align: left;
+        }
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.2s;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .btn-action {
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            margin-right: 5px;
+            border-radius: 5px;
+        }
+        .edit-link {
+            background-color: #28a745;
+            color: white;
+        }
+        .edit-link:hover {
+            background-color: #218838;
+            color: white;
+        }
+        .delete-link {
+            background-color: #dc3545;
+            color: white;
+        }
+        .delete-link:hover {
+            background-color: #c82333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-12">
+                <div class="card product-card">
+                    <div class="card-header text-center">
+                        <h2 class="mb-0"><i class="fas fa-list"></i> Lista de Productos</h2>
+                    </div>
+                    <div class="card-body">
+                        <a href="/admin" class="back-link">Volver</a>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in productos %}
+                                    <tr>
+                                        <td>{{ p['id'] }}</td>
+                                        <td>{{ p['nombre'] }}</td>
+                                        <td>{{ "%.2f"|format(p['precio']) }} Bs.</td>
+                                        <td>{{ p['fecha_creacion'][:10] }}</td>
+                                        <td>
+                                            <form action="{{ url_for('editar_producto', producto_id=p['id']) }}" method="get" style="display:inline;">
+                                                <button type="submit" class="btn btn-action edit-link">Editar</button>
+                                            </form>
+                                            <form action="{{ url_for('eliminar_producto_web', producto_id=p['id']) }}" method="post" style="display:inline;" onsubmit="return confirmDelete(event, {{ p['id'] }});">
+                                                <button type="submit" class="btn btn-action delete-link">Eliminar</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if not productos %}
+                            <p class="text-center text-muted">No hay productos registrados.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script>
+        // Detectar si se eliminó un producto exitosamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const deleted = urlParams.get('deleted');
+            const edited = urlParams.get('edited');
+            
+            if (deleted === 'success') {
+                Swal.fire({
+                    title: '¡Eliminado!',
+                    text: 'El producto ha sido eliminado correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Aceptar',
+                    timer: 3000,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                });
+            }
+            
+            if (edited === 'success') {
+                Swal.fire({
+                    title: '¡Actualizado!',
+                    text: 'El producto ha sido actualizado correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Aceptar',
+                    timer: 3000,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                });
+            }
+        });
+
+        // Función para confirmar eliminación con SweetAlert
+        function confirmDelete(event, productoId) {
+            event.preventDefault();
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esta acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Eliminando...',
+                        text: 'Por favor espera mientras se elimina el producto.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    setTimeout(() => {
+                        event.target.submit();
+                    }, 500);
+                }
+            });
+            
+            return false;
+        }
+        
+        window.addEventListener('beforeunload', function() {
+            if (Swal.isVisible()) {
+                Swal.close();
+            }
+        });
+    </script>
+</body>
+</html>

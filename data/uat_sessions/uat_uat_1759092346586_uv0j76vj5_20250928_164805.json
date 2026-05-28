@@ -1,0 +1,14 @@
+{
+  "sessionId": "uat_1759092346586_uv0j76vj5",
+  "scenario": "busqueda",
+  "page": "search",
+  "timeSpent": 120,
+  "interactions": 5,
+  "success": "parcial",
+  "difficulties": "",
+  "rating": 4,
+  "timestamp": "2025-09-28T20:48:05.114Z",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0",
+  "server_timestamp": "2025-09-28T16:48:05.120710",
+  "user_session": "anonymous"
+}

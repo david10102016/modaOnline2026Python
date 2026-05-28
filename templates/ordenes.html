@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Órdenes - Moda Bolivia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .filters {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filters form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filters select, .filters input[type="date"], .filters button {
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .order-details {
+            flex-grow: 1;
+        }
+        .checkbox-column {
+            margin-right: 10px;
+        }
+        select {
+            padding: 5px;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .bulk-actions {
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de Órdenes</h1>
+
+    <!-- Filtros -->
+    <div class="filters">
+        <form method="GET" action="{{ url_for('ver_ordenes') }}">
+            <select name="estado" onchange="this.form.submit()">
+                <option value="">Todos los estados</option>
+                <option value="pendiente" {% if request.args.get('estado') == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="procesando" {% if request.args.get('estado') == 'procesando' %}selected{% endif %}>Procesando</option>
+                <option value="enviado" {% if request.args.get('estado') == 'enviado' %}selected{% endif %}>Enviado</option>
+                <option value="completado" {% if request.args.get('estado') == 'completado' %}selected{% endif %}>Completado</option>
+                <option value="cancelado" {% if request.args.get('estado') == 'cancelado' %}selected{% endif %}>Cancelado</option>
+            </select>
+            <input type="date" name="fecha_inicio" {% if request.args.get('fecha_inicio') %}value="{{ request.args.get('fecha_inicio') }}"{% endif %} onchange="this.form.submit()">
+            <input type="date" name="fecha_fin" {% if request.args.get('fecha_fin') %}value="{{ request.args.get('fecha_fin') }}"{% endif %} onchange="this.form.submit()">
+            <select name="metodo_pago" onchange="this.form.submit()">
+                <option value="">Todos los métodos</option>
+                <option value="tigo_money" {% if request.args.get('metodo_pago') == 'tigo_money' %}selected{% endif %}>Tigo Money</option>
+                <option value="qr_simple" {% if request.args.get('metodo_pago') == 'qr_simple' %}selected{% endif %}>QR Simple</option>
+                <option value="whatsapp" {% if request.args.get('metodo_pago') == 'whatsapp' %}selected{% endif %}>WhatsApp</option>
+            </select>
+            <button type="button" onclick="this.form.submit()">Filtrar</button>
+        </form>
+    </div>
+
+    <!-- Lista de órdenes con formulario de actualización en masa -->
+    <form method="POST" action="{{ url_for('actualizar_ordenes_masa') }}" id="bulk-update-form">
+        <div class="bulk-actions">
+            <select name="nuevo_estado">
+                <option value="pendiente">Pendiente</option>
+                <option value="procesando">Procesando</option>
+                <option value="enviado">Enviado</option>
+                <option value="completado">Completado</option>
+                <option value="cancelado">Cancelado</option>
+            </select>
+            <button type="submit">Actualizar Seleccionadas</button>
+        </div>
+        <ul>
+            {% for o in ordenes %}
+            <li>
+                <div class="checkbox-column">
+                    <input type="checkbox" name="ordenes_seleccionadas" value="{{ o['id'] }}">
+                </div>
+                <div class="order-details">
+                    ID: {{ o['id'] }} - Cliente: {{ o['nombre_cliente'] if o['nombre_cliente'] else 'No especificado' }} - Total: Bs. {{ "%.2f"|format(o['total']) }} - Método: {{ o['metodo_pago']|title if o['metodo_pago'] else 'No especificado' }} - Fecha: {{ o['fecha'][:10] }} - Estado: {{ o['estado']|title if o['estado'] else 'Pendiente' }}
+                </div>
+                <form method="POST" action="{{ url_for('actualizar_orden', orden_id=o['id']) }}" style="margin: 0;">
+                    <select name="estado">
+                        <option value="pendiente" {% if not o['estado'] or o['estado'] == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="procesando" {% if o['estado'] == 'procesando' %}selected{% endif %}>Procesando</option>
+                        <option value="enviado" {% if o['estado'] == 'enviado' %}selected{% endif %}>Enviado</option>
+                        <option value="completado" {% if o['estado'] == 'completado' %}selected{% endif %}>Completado</option>
+                        <option value="cancelado" {% if o['estado'] == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                    </select>
+                    <button type="submit">Actualizar</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </form>
+    <a href="/admin">Volver</a>
+</body>
+</html>

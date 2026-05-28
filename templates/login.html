@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión - Moda Bolivia{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="row g-0">
+                    <!-- Panel de Login -->
+                    <div class="col-lg-6" id="panel-login">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-4">
+                                <h2 class="fw-bold text-primary">
+                                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                                </h2>
+                                <p class="text-muted">Accede a tu cuenta de Moda Bolivia</p>
+                            </div>
+                            
+                            <form id="form-login" method="POST" action="{{ url_for('login') }}">
+                                <div class="mb-3">
+                                    <label for="correo-login" class="form-label fw-bold">
+                                        <i class="fas fa-envelope text-primary"></i> Correo Electrónico
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" 
+                                           id="correo-login" name="correo" required
+                                           placeholder="tu@email.com">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="password-login" class="form-label fw-bold">
+                                        <i class="fas fa-lock text-primary"></i> Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg" 
+                                               id="password-login" name="password" required
+                                               placeholder="Tu contraseña">
+                                        <button class="btn btn-outline-secondary" type="button" 
+                                                onclick="togglePassword('password-login', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 mb-3">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-sign-in-alt"></i> Ingresar
+                                    </button>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <p class="mb-0">¿No tienes cuenta? 
+                                        <a href="#" onclick="mostrarRegistro()" class="text-decoration-none fw-bold">
+                                            Regístrate aquí
+                                        </a>
+                                    </p>
+                                </div>
+                            </form>
+                            
+                            <!-- Datos de prueba -->
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="fas fa-key text-warning"></i> Usuario Admin de Prueba
+                                </h6>
+                                <p class="mb-1"><strong>Email:</strong>❤️</p>
+                                <p class="mb-0"><strong>Contraseña:</strong> 🤡</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Panel de Registro -->
+                    <div class="col-lg-6" id="panel-registro" style="display: none;">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-4">
+                                <h2 class="fw-bold text-success">
+                                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                                </h2>
+                                <p class="text-muted">Únete a la familia de Moda Bolivia</p>
+                            </div>
+                            
+                            <form id="form-registro" method="POST" action="{{ url_for('registro') }}">
+                                <div class="mb-3">
+                                    <label for="nombre-registro" class="form-label fw-bold">
+                                        <i class="fas fa-user text-success"></i> Nombre Completo
+                                    </label>
+                                    <input type="text" class="form-control" 
+                                           id="nombre-registro" name="nombre" required
+                                           placeholder="Tu nombre completo">
+                                    <div class="form-text">Solo letras, espacios y acentos</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="correo-registro" class="form-label fw-bold">
+                                        <i class="fas fa-envelope text-success"></i> Correo Electrónico
+                                    </label>
+                                    <input type="email" class="form-control" 
+                                           id="correo-registro" name="correo" required
+                                           placeholder="tu@email.com">
+                                    <div class="form-text">Formato: david@elcapo.com</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="telefono-registro" class="form-label fw-bold">
+                                        <i class="fab fa-whatsapp text-success"></i> Teléfono/WhatsApp
+                                    </label>
+                                    <input type="tel" class="form-control" 
+                                           id="telefono-registro" name="telefono" required
+                                           placeholder="73138524">
+                                    <div class="form-text">Número boliviano de 7 dígitos</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="password-registro" class="form-label fw-bold">
+                                        <i class="fas fa-lock text-success"></i> Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" 
+                                               id="password-registro" name="password" required
+                                               placeholder="Mínimo 8 caracteres">
+                                        <button class="btn btn-outline-secondary" type="button" 
+                                                onclick="togglePassword('password-registro', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">
+                                        Debe incluir: mayúscula, minúscula, número y símbolo
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="confirm-password" class="form-label fw-bold">
+                                        <i class="fas fa-lock text-success"></i> Confirmar Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" 
+                                               id="confirm-password" name="confirm_password" required
+                                               placeholder="Repite tu contraseña">
+                                        <button class="btn btn-outline-secondary" type="button" 
+                                                onclick="togglePassword('confirm-password', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 mb-3">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-user-plus"></i> Crear Cuenta
+                                    </button>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <p class="mb-0">¿Ya tienes cuenta? 
+                                        <a href="#" onclick="mostrarLogin()" class="text-decoration-none fw-bold">
+                                            Inicia sesión aquí
+                                        </a>
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Panel Decorativo -->
+                    <div class="col-lg-6 bg-gradient-primary text-white d-flex align-items-center justify-content-center" 
+                         id="panel-decorativo">
+                        <div class="text-center p-5">
+                            <i class="fas fa-shopping-bag fa-5x mb-4"></i>
+                            <h2 class="fw-bold mb-3">Bienvenido a Moda Bolivia</h2>
+                            <p class="lead mb-4">
+                                Descubre la mejor selección de ropa para toda la familia 
+                                en el corazón de Santa Cruz de la Sierra.
+                            </p>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle me-2"></i> 
+                                    Productos de calidad
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle me-2"></i> 
+                                    Entrega rápida
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle me-2"></i> 
+                                    Atención personalizada
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle me-2"></i> 
+                                    Ubicados en Equipetrol
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function mostrarRegistro() {
+    document.getElementById('panel-login').style.display = 'none';
+    document.getElementById('panel-registro').style.display = 'block';
+    
+    const panelDeco = document.getElementById('panel-decorativo');
+    panelDeco.innerHTML = `
+        <div class="text-center p-5">
+            <i class="fas fa-user-plus fa-5x mb-4"></i>
+            <h2 class="fw-bold mb-3">Únete a Nosotros</h2>
+            <p class="lead mb-4">
+                Crea tu cuenta gratuita y disfruta de beneficios exclusivos, 
+                ofertas especiales y un servicio personalizado.
+            </p>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="fas fa-heart me-2"></i> 
+                    Productos favoritos
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-tags me-2"></i> 
+                    Ofertas exclusivas
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-history me-2"></i> 
+                    Historial de compras
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-star me-2"></i> 
+                    Programa de puntos
+                </li>
+            </ul>
+        </div>
+    `;
+}
+
+function mostrarLogin() {
+    document.getElementById('panel-registro').style.display = 'none';
+    document.getElementById('panel-login').style.display = 'block';
+    
+    const panelDeco = document.getElementById('panel-decorativo');
+    panelDeco.innerHTML = `
+        <div class="text-center p-5">
+            <i class="fas fa-shopping-bag fa-5x mb-4"></i>
+            <h2 class="fw-bold mb-3">Bienvenido a Moda Bolivia</h2>
+            <p class="lead mb-4">
+                Descubre la mejor selección de ropa para toda la familia 
+                en el corazón de Santa Cruz de la Sierra.
+            </p>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="fas fa-check-circle me-2"></i> 
+                    Productos de calidad
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-check-circle me-2"></i> 
+                    Entrega rápida
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-check-circle me-2"></i> 
+                    Atención personalizada
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-check-circle me-2"></i> 
+                    Ubicados en Equipetrol
+                </li>
+            </ul>
+        </div>
+    `;
+}
+
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// FUNCIONES DE VALIDACIÓN
+function validarNombre(nombre) {
+    const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    return nombreRegex.test(nombre);
+}
+
+function validarEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9][a-zA-Z0-9._-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email) && !email.includes('%') && !email.includes(' ');
+}
+
+function validarTelefonoBolivia(telefono) {
+    const telefonoRegex = /^[678]\d{7}$/;
+    return telefonoRegex.test(telefono);
+}
+
+function validarPassword(password) {
+    if (password.length < 8) return false;
+    if (!/[A-Z]/.test(password)) return false;
+    if (!/[a-z]/.test(password)) return false;
+    if (!/\d/.test(password)) return false;
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return false;
+    return true;
+}
+
+function validarTodosLosCampos() {
+    const nombre = document.getElementById('nombre-registro').value.trim();
+    const correo = document.getElementById('correo-registro').value.trim();
+    const telefono = document.getElementById('telefono-registro').value.trim();
+    const password = document.getElementById('password-registro').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    
+    let errores = [];
+    
+    // Campos vacíos
+    if (!nombre) errores.push('• Nombre es requerido');
+    if (!correo) errores.push('• Correo es requerido');
+    if (!telefono) errores.push('• Teléfono es requerido');
+    if (!password) errores.push('• Contraseña es requerida');
+    if (!confirmPassword) errores.push('• Confirmación de contraseña es requerida');
+    
+    if (errores.length > 0) {
+        return { valido: false, errores: errores };
+    }
+    
+    // Validaciones específicas
+    if (!validarNombre(nombre)) {
+        errores.push('• Nombre: solo letras, espacios y acentos');
+    }
+    
+    if (!validarEmail(correo)) {
+        errores.push('• Email: formato inválido (ejemplo@dominio.com)');
+    }
+    
+    if (!validarTelefonoBolivia(telefono)) {
+        errores.push('• Teléfono: 8 dígitos que inicie con 6, 7 u 8');
+    }
+    
+    if (!validarPassword(password)) {
+        errores.push('• Contraseña: mínimo 8 caracteres, mayúscula, minúscula, número y símbolo');
+    }
+    
+    if (password !== confirmPassword) {
+        errores.push('• Las contraseñas no coinciden');
+    }
+    
+    return { valido: errores.length === 0, errores: errores };
+}
+
+// VALIDACIONES EN TIEMPO REAL
+document.getElementById('nombre-registro').addEventListener('input', function() {
+    const isValid = validarNombre(this.value.trim());
+    if (this.value.trim().length > 0) {
+        this.classList.toggle('is-valid', isValid);
+        this.classList.toggle('is-invalid', !isValid);
+    } else {
+        this.classList.remove('is-valid', 'is-invalid');
+    }
+});
+
+document.getElementById('correo-registro').addEventListener('input', function() {
+    const isValid = validarEmail(this.value.trim());
+    if (this.value.trim().length > 0) {
+        this.classList.toggle('is-valid', isValid);
+        this.classList.toggle('is-invalid', !isValid);
+    } else {
+        this.classList.remove('is-valid', 'is-invalid');
+    }
+});
+
+document.getElementById('correo-login').addEventListener('input', function() {
+    const isValid = validarEmail(this.value.trim());
+    if (this.value.trim().length > 0) {
+        this.classList.toggle('is-valid', isValid);
+        this.classList.toggle('is-invalid', !isValid);
+    } else {
+        this.classList.remove('is-valid', 'is-invalid');
+    }
+});
+
+document.getElementById('telefono-registro').addEventListener('input', function() {
+    let valor = this.value.replace(/\D/g, '');
+    if (valor.length > 8) valor = valor.substring(0, 8);
+    this.value = valor;
+    
+    const isValid = validarTelefonoBolivia(valor);
+    if (valor.length > 0) {
+        this.classList.toggle('is-valid', isValid);
+        this.classList.toggle('is-invalid', !isValid);
+    } else {
+        this.classList.remove('is-valid', 'is-invalid');
+    }
+});
+
+document.getElementById('password-registro').addEventListener('input', function() {
+    const password = this.value;
+    const isValid = validarPassword(password);
+    
+    if (password.length > 0) {
+        this.classList.toggle('is-valid', isValid);
+        this.classList.toggle('is-invalid', !isValid);
+    } else {
+        this.classList.remove('is-valid', 'is-invalid');
+    }
+    
+    const confirmPassword = document.getElementById('confirm-password');
+    if (confirmPassword.value.length > 0) {
+        const passwordsMatch = confirmPassword.value === password && isValid;
+        confirmPassword.classList.toggle('is-valid', passwordsMatch);
+        confirmPassword.classList.toggle('is-invalid', !passwordsMatch);
+    }
+});
+
+document.getElementById('confirm-password').addEventListener('input', function() {
+    const password = document.getElementById('password-registro').value;
+    const confirmPassword = this.value;
+    
+    if (confirmPassword.length > 0) {
+        const passwordsMatch = confirmPassword === password && validarPassword(password);
+        this.classList.toggle('is-valid', passwordsMatch);
+        this.classList.toggle('is-invalid', !passwordsMatch);
+    } else {
+        this.classList.remove('is-valid', 'is-invalid');
+    }
+});
+
+// VALIDACIÓN DE FORMULARIOS
+document.getElementById('form-registro').addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('Formulario de registro enviado - iniciando validación');
+    
+    const validacion = validarTodosLosCampos();
+    
+    if (!validacion.valido) {
+        console.log('Errores encontrados:', validacion.errores);
+        Swal.fire({
+            icon: 'error',
+            title: `Se encontraron ${validacion.errores.length} errores:`,
+            html: validacion.errores.join('<br>'),
+            confirmButtonColor: '#198754',
+            width: '500px'
+        });
+        return;
+    }
+    
+    console.log('Validación exitosa - enviando formulario');
+    Swal.fire({
+        title: 'Creando cuenta...',
+        text: 'Por favor espera mientras procesamos tu registro',
+        icon: 'info',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading()
+        }
+    });
+    
+    setTimeout(() => {
+        this.submit();
+    }, 1000);
+});
+
+document.getElementById('form-login').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const correo = document.getElementById('correo-login').value.trim();
+    const password = document.getElementById('password-login').value.trim();
+    
+    let errores = [];
+    
+    if (!correo) errores.push('• Correo es requerido');
+    if (!password) errores.push('• Contraseña es requerida');
+    
+    if (errores.length === 0) {
+        if (!validarEmail(correo)) {
+            errores.push('• Email: formato inválido');
+        }
+    }
+    
+    if (errores.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: `Se encontraron ${errores.length} errores:`,
+            html: errores.join('<br>'),
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
+    }
+    
+    this.submit();
+});
+
+console.log('Script de validaciones cargado correctamente');
+</script>
+{% endblock %}

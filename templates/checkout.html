@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Finalizar Compra - Moda Bolivia{% endblock %}
+
+{% block content %}
+<div class="container my-5" id="checkout-page">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('carrito') }}">Carrito</a></li>
+            <li class="breadcrumb-item active">Finalizar Compra</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Formulario de Datos -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm" id="form-datos-cliente">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user"></i> Datos del Cliente</h4>
+                </div>
+                
+                <div class="card-body">
+                    <form id="form-checkout" method="POST" action="{{ url_for('procesar_pedido') }}">
+                        <div id="identificacion">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="nombre" class="form-label fw-bold">
+                                        <i class="fas fa-user text-primary"></i> Nombre Completo *
+                                    </label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           value="{{ usuario.nombre if usuario else '' }}" 
+                                           placeholder="Ingresa tu nombre completo"
+                                           pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
+                                           title="Solo se permiten letras, espacios y acentos"
+                                           onkeypress="return /[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(event.key)"
+                                           required>
+                                    <div class="form-text">Solo letras, espacios y acentos permitidos</div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="telefono" class="form-label fw-bold">
+                                        <i class="fab fa-whatsapp text-success"></i> Teléfono/WhatsApp *
+                                    </label>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                           value="{{ usuario.telefono if usuario else '' }}" 
+                                           placeholder="73138524" required>
+                                    <div class="form-text">Número boliviano de 7 dígitos (sin código de país)</div>
+                                </div>
+                                
+                                <div class="col-12 mt-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="facturar" name="facturar">
+                                        <label class="form-check-label" for="facturar">¿Desea factura? (Opcional)</label>
+                                    </div>
+                                </div>
+                                <div class="factura-campos" style="display: none;">
+                                    <div class="col-12 mt-3">
+                                        <label for="nit" class="form-label">NIT</label>
+                                        <input type="text" class="form-control" id="nit" name="nit" placeholder="Ej: 12345678">
+                                    </div>
+                                    <div class="col-12 mt-3">
+                                        <label for="ci" class="form-label">Carnet de Identidad</label>
+                                        <input type="text" class="form-control" id="ci" name="ci" placeholder="Ej: 1234567 LP">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="entrega" style="display: none;">
+                            <h5 class="fw-bold mb-3 mt-4"><i class="fas fa-truck text-primary"></i> Método de Entrega</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card metodo-pago-card">
+                                        <label class="card-body text-center cursor-pointer" for="envio">
+                                            <input type="radio" class="form-check-input me-2" id="envio" name="metodo_entrega" value="envio" checked>
+                                            <div class="mt-2">
+                                                <i class="fas fa-shipping-fast fa-3x text-success mb-2"></i>
+                                                <h6>Envío</h6>
+                                                <p class="text-muted small">+Bs. 20</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card metodo-pago-card">
+                                        <label class="card-body text-center cursor-pointer" for="retiro">
+                                            <input type="radio" class="form-check-input me-2" id="retiro" name="metodo_entrega" value="retiro">
+                                            <div class="mt-2">
+                                                <i class="fas fa-store fa-3x text-primary mb-2"></i>
+                                                <h6>Retiro en Tienda</h6>
+                                                <p class="text-muted small">Gratis</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="envio-campos mt-3" style="display: none;">
+                                <div class="col-12">
+                                    <label for="direccion" class="form-label">Dirección</label>
+                                    <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Ej: Av. San Martín 123">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <label for="ciudad" class="form-label">Ciudad</label>
+                                    <input type="text" class="form-control" id="ciudad" name="ciudad" placeholder="Ej: Santa Cruz">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="pago" style="display: none;">
+                            <h5 class="fw-bold mb-3 mt-4"><i class="fas fa-credit-card text-primary"></i> Método de Pago</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card metodo-pago-card">
+                                        <label class="card-body text-center cursor-pointer" for="pago-tigo">
+                                            <input type="radio" class="form-check-input me-2" id="pago-tigo" name="metodo_pago" value="tigo_money">
+                                            <div class="mt-2">
+                                                <i class="fas fa-wallet fa-3x text-success mb-2"></i>
+                                                <h6>Tigo Money</h6>
+                                                <p class="text-muted small">Pago con billetera móvil</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card metodo-pago-card">
+                                        <label class="card-body text-center cursor-pointer" for="pago-qr">
+                                            <input type="radio" class="form-check-input me-2" id="pago-qr" name="metodo_pago" value="qr_simple">
+                                            <div class="mt-2">
+                                                <i class="fas fa-qrcode fa-3x text-primary mb-2"></i>
+                                                <h6>QR Simple</h6>
+                                                <p class="text-muted small">Pago con QR simulado</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <div class="card metodo-pago-card">
+                                        <label class="card-body text-center cursor-pointer" for="pago-whatsapp">
+                                            <input type="radio" class="form-check-input me-2" id="pago-whatsapp" name="metodo_pago" value="whatsapp">
+                                            <div class="mt-2">
+                                                <i class="fab fa-whatsapp fa-3x text-success mb-2"></i>
+                                                <h6>WhatsApp</h6>
+                                                <p class="text-muted small">Coordinación directa</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6 class="fw-bold mb-2"><i class="fab fa-whatsapp text-success"></i> Contacto de Pago</h6>
+                                <p class="mb-0">
+                                    <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">
+                                        <i class="fab fa-whatsapp text-success me-1"></i> +591 73138524
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="button" class="btn btn-primary btn-lg" id="siguiente-identificacion">
+                                <i class="fas fa-arrow-right"></i> Siguiente (Identificación)
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg" id="siguiente-entrega" style="display: none;">
+                                <i class="fas fa-arrow-right"></i> Siguiente (Entrega)
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg" id="btn-finalizar-compra" style="display: none;">
+                                <i class="fas fa-check-circle"></i> Finalizar Compra
+                            </button>
+                            <a href="{{ url_for('carrito') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Volver al Carrito
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen del Pedido -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm sticky-top" style="top: 100px;" id="resumen-checkout">
+                <div class="card-header bg-gradient-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> Resumen del Pedido</h5>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Items del Carrito -->
+                    <div class="pedido-items mb-3">
+                        {% for item in items %}
+                        <div class="d-flex align-items-center mb-2 pb-2 border-bottom">
+                            <img src="{{ item.imagen if item.imagen else '/static/images/productos/default.jpg' }}" 
+                                 alt="{{ item.nombre }}" 
+                                 class="rounded me-2"
+                                 style="width: 40px; height: 40px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 small fw-bold">{{ item.nombre }}</h6>
+                                <small class="text-muted">Cantidad: {{ item.cantidad }}</small>
+                            </div>
+                            <span class="fw-bold text-primary">
+                                Bs. {{ "%.2f"|format(item.precio_unitario * item.cantidad) }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Totales -->
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal ({{ items|length }} {% if items|length == 1 %}producto{% else %}productos{% endif %}):</span>
+                            <span class="fw-bold">Bs. {{ "%.2f"|format(total) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Envío:</span>
+                            <span id="resumen-envio" class="text-muted">A coordinar</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fw-bold">Total a Pagar:</h5>
+                            <h5 class="fw-bold text-success">Bs. {{ "%.2f"|format(total) }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-store text-primary"></i> Nuestra Tienda</h6>
+                        <p class="small mb-2">
+                            <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                            Av. San Martín, Equipetrol<br>
+                            Santa Cruz de la Sierra, Bolivia
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fab fa-whatsapp text-success me-1"></i>
+                            <a href="https://wa.me/59173138524" target="_blank" class="text-decoration-none">
+                                +591 73138524
+                            </a>
+                        </p>
+                        <p class="small mb-0">
+                            <i class="fas fa-clock text-info me-1"></i>
+                            Lun - Sáb: 9:00 - 20:00
+                        </p>
+                    </div>
+                    
+                    <div class="mt-3 p-3 bg-success bg-opacity-10 rounded">
+                        <h6 class="fw-bold text-success mb-2"><i class="fas fa-shield-alt"></i> Garantías</h6>
+                        <ul class="list-unstyled mb-0 small">
+                            <li><i class="fas fa-check text-success me-1"></i> Productos originales</li>
+                            <li><i class="fas fa-check text-success me-1"></i> Entrega garantizada</li>
+                            <li><i class="fas fa-check text-success me-1"></i> Soporte personalizado</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validaciones y flujo progresivo
+let paso = 1;
+const siguienteIdentificacion = document.getElementById('siguiente-identificacion');
+const siguienteEntrega = document.getElementById('siguiente-entrega');
+const finalizarCompra = document.getElementById('btn-finalizar-compra');
+const identificacion = document.getElementById('identificacion');
+const entrega = document.getElementById('entrega');
+const pago = document.getElementById('pago');
+
+siguienteIdentificacion.addEventListener('click', function(e) {
+    if (validarIdentificacion()) {
+        identificacion.style.display = 'none';
+        entrega.style.display = 'block';
+        siguienteEntrega.style.display = 'block';
+        this.style.display = 'none';
+        paso = 2;
+    }
+});
+
+siguienteEntrega.addEventListener('click', function(e) {
+    if (validarEntrega()) {
+        entrega.style.display = 'none';
+        pago.style.display = 'block';
+        finalizarCompra.style.display = 'block';
+        this.style.display = 'none';
+        paso = 3;
+    }
+});
+
+document.getElementById('form-checkout').addEventListener('submit', function(e) {
+    if (!validarPago()) {
+        e.preventDefault();
+        return;
+    }
+    e.preventDefault();
+    const metodoPago = document.querySelector('input[name="metodo_pago"]:checked');
+    const metodoTexto = metodoPago.value === 'whatsapp' ? 'WhatsApp' :
+                       metodoPago.value === 'tigo_money' ? 'Tigo Money' :
+                       metodoPago.value === 'qr_simple' ? 'QR Simple' : 'QR Bancario';
+    Swal.fire({
+        title: '¿Confirmar pedido?',
+        html: `
+            <div class="text-start">
+                <p><strong>Cliente:</strong> ${document.getElementById('nombre').value}</p>
+                <p><strong>Teléfono:</strong> +591 ${document.getElementById('telefono').value}</p>
+                <p><strong>Método de pago:</strong> ${metodoTexto}</p>
+                <p><strong>Total:</strong> Bs. {{ "%.2f"|format(total) }}</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, confirmar pedido',
+        cancelButtonText: 'Revisar datos'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Procesando pedido...',
+                text: 'Por favor espera un momento',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                willOpen: () => Swal.showLoading()
+            });
+            this.submit();
+        }
+    });
+});
+
+function validarIdentificacion() {
+    const nombre = document.getElementById('nombre').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const telefonoRegex = /^[678]\d{6,7}$/; // Acepta 7 u 8 dígitos
+    if (!nombreRegex.test(nombre)) {
+        Swal.fire({ icon: 'error', title: 'Nombre inválido', text: 'Solo letras y espacios' });
+        return false;
+    }
+    if (!telefonoRegex.test(telefono)) {
+        Swal.fire({ icon: 'error', title: 'Teléfono inválido', text: '7 u 8 dígitos bolivianos' });
+        return false;
+    }
+    return true;
+}
+
+function validarEntrega() {
+    const metodoEntrega = document.querySelector('input[name="metodo_entrega"]:checked');
+    if (!metodoEntrega) {
+        Swal.fire({ icon: 'error', title: 'Método de entrega requerido' });
+        return false;
+    }
+    if (metodoEntrega.value === 'envio') {
+        const direccion = document.getElementById('direccion').value.trim();
+        const ciudad = document.getElementById('ciudad').value.trim();
+        if (!direccion || !ciudad) {
+            Swal.fire({ icon: 'error', title: 'Completa dirección y ciudad' });
+            return false;
+        }
+    }
+    return true;
+}
+
+function validarPago() {
+    const metodoPago = document.querySelector('input[name="metodo_pago"]:checked');
+    if (!metodoPago) {
+        Swal.fire({ icon: 'error', title: 'Método de pago requerido' });
+        return false;
+    }
+    return true;
+}
+
+// Mostrar campos factura
+document.getElementById('facturar').addEventListener('change', function() {
+    document.querySelector('.factura-campos').style.display = this.checked ? 'block' : 'none';
+});
+
+// Mostrar campos envío y actualizar resumen
+document.querySelectorAll('input[name="metodo_entrega"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelector('.envio-campos').style.display = this.value === 'envio' ? 'block' : 'none';
+        document.getElementById('resumen-envio').textContent = this.value === 'envio' ? '+Bs. 20' : 'Gratis';
+    });
+});
+document.getElementById('envio').dispatchEvent(new Event('change'));
+
+// Efectos visuales para métodos
+document.querySelectorAll('input[name="metodo_pago"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.metodo-pago-card').forEach(card => {
+            card.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+        });
+        this.closest('.metodo-pago-card').classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+    });
+});
+document.getElementById('pago-tigo').dispatchEvent(new Event('change'));
+
+// Validación en tiempo real
+document.getElementById('telefono').addEventListener('input', function() {
+    let valor = this.value.replace(/\D/g, ''); // Elimina caracteres no numéricos
+    if (valor.length > 8) valor = valor.substring(0, 8); // Limita a 8 dígitos
+    this.value = valor;
+    const telefonoRegex = /^[678]\d{6,7}$/; // Acepta 7 u 8 dígitos
+    if (valor.length > 0) {
+        if (telefonoRegex.test(valor)) {
+            this.classList.remove('is-invalid'); // Elimina rojo si es válido
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid'); // Asegura que rojo solo si no es válido
+            this.classList.add('is-invalid');
+        }
+    } else {
+        this.classList.remove('is-valid', 'is-invalid'); // Sin clases si está vacío
+    }
+});
+
+document.getElementById('nombre').addEventListener('input', function() {
+    const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    if (this.value.trim().length > 0) {
+        if (nombreRegex.test(this.value.trim())) this.classList.add('is-valid');
+        else this.classList.add('is-invalid');
+    } else this.classList.remove('is-valid', 'is-invalid');
+});
+</script>
+
+<style>
+.metodo-pago-card {
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.metodo-pago-card:hover {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.cursor-pointer { cursor: pointer; }
+</style>
+{% endblock %}

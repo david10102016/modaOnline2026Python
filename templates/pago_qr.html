@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Pago QR - Moda Bolivia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+        .payment-container {
+            background: linear-gradient(135deg, #ffffff33, #ffffff80);
+            backdrop-filter: blur(10px);
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            color: #ff6f61;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        p {
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .qr-container {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px dashed #ff6f61;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .qr-code {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(255, 111, 97, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .qr-code:hover {
+            transform: scale(1.05);
+        }
+        .list-group-item {
+            background: linear-gradient(90deg, #2a5298, #1e3c72);
+            color: #fff;
+            border: none;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            padding: 15px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        .list-group-item:hover {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6f61, #ff8c42);
+            border: none;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 25px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #ff8c42, #ff6f61);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 111, 97, 0.5);
+        }
+        a.text-primary {
+            color: #ff6f61 !important;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        a.text-primary:hover {
+            color: #ff8c42 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Pago con QR</h1>
+        <p>Gracias por tu compra, {{ nombre }}. Aquí están los detalles de tu orden:</p>
+        <ul class="list-group">
+            <li class="list-group-item"><strong>Número de Orden:</strong> {{ orden_id }}</li>
+            <li class="list-group-item"><strong>Total:</strong> Bs. {{ total }}</li>
+            <li class="list-group-item"><strong>Nombre:</strong> {{ nombre }}</li>
+            <li class="list-group-item"><strong>Teléfono:</strong> {{ telefono }}</li>
+        </ul>
+        <div class="qr-container">
+            <p>Por favor, escanea el siguiente código QR para realizar el pago:</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=Orden%20%23{{ orden_id }}%20-%20Total:%20Bs.%20{{ total }}%20-%20Tel:%20{{ telefono }}" alt="Código QR de la orden" class="qr-code" onerror="this.style.display='none'; alert('Error al cargar el QR. Contacta al soporte.');">
+        </div>
+        <p>Una vez realizado el pago, confirma enviando un mensaje al <a href="https://wa.me/59173138524" target="_blank" class="text-primary">administrador</a>.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-4">Volver al Inicio</a>
+    </div>
+</body>
+</html>

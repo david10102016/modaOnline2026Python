@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+
+{% block title %}{{ producto.nombre }} - Moda Bolivia{% endblock %}
+
+{% block content %}
+<div class="container my-5" id="detalle-producto">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Inicio</a></li>
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('buscar', categoria=producto.categoria_tipo) }}">
+                    {{ producto.categoria_tipo|title }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active">{{ producto.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Imagen del Producto -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <img src="{{ producto.imagen }}" 
+                     alt="{{ producto.nombre }}" 
+                     class="card-img-top producto-imagen-grande"
+                     id="imagen-principal">
+            </div>
+        </div>
+
+        <!-- Información del Producto -->
+        <div class="col-lg-6">
+            <div class="producto-info">
+                <!-- Título y Precio -->
+                <div class="mb-4">
+                    <h1 class="fw-bold mb-2" id="nombre-producto">{{ producto.nombre }}</h1>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <h2 class="text-primary fw-bold mb-0" id="precio-producto">
+                            Bs. {{ "%.2f"|format(producto.precio) }}
+                        </h2>
+                        <span class="badge bg-success">
+                            <i class="fas fa-tag"></i> {{ producto.categoria_nombre }}
+                        </span>
+                    </div>
+                    
+                    <!-- Calificación promedio -->
+                    {% set calificacion_promedio = comentarios|length > 0 and (comentarios|sum(attribute='calificacion') / comentarios|length) or 0 %}
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="estrellas">
+                            {% for i in range(1, 6) %}
+                                <i class="fas fa-star {% if i <= calificacion_promedio %}text-warning{% else %}text-muted{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="text-muted">
+                            ({{ comentarios|length }} {% if comentarios|length == 1 %}comentario{% else %}comentarios{% endif %})
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-2">
+                        <i class="fas fa-info-circle text-primary"></i> Descripción
+                    </h5>
+                    <p class="text-muted">{{ producto.descripcion }}</p>
+                </div>
+
+                <!-- Formulario de Compra -->
+                <div class="card bg-light mb-4" id="form-compra">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold mb-3">
+                            <i class="fas fa-shopping-cart text-primary"></i> Agregar al Carrito
+                        </h5>
+                        
+                        <form id="form-agregar-carrito">
+                            <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                            
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Cantidad:</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary" 
+                                                onclick="cambiarCantidad(-1)">-</button>
+                                        <input type="number" class="form-control text-center" 
+                                               name="cantidad" id="cantidad" value="1" min="1" max="10">
+                                        <button type="button" class="btn btn-outline-secondary" 
+                                                onclick="cambiarCantidad(1)">+</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-8">
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                                        </button>
+                                        <a href="{{ url_for('carrito') }}" 
+                                           class="btn btn-outline-primary btn-lg">
+                                            <i class="fas fa-shopping-cart"></i> Ver Carrito
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="fas fa-truck me-2 text-primary"></i>
+                            <span>Entrega en 24-48 horas</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="fab fa-whatsapp me-2 text-success"></i>
+                            <span>Consultas al +591 73138524</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="fas fa-shield-alt me-2 text-info"></i>
+                            <span>Garantía de calidad</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="fas fa-exchange-alt me-2 text-warning"></i>
+                            <span>Cambios hasta 7 días</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compartir -->
+                <div class="d-flex gap-2">
+                    <span class="fw-bold me-2">Compartir:</span>
+                    <a href="#" class="btn btn-outline-primary btn-sm">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="https://wa.me/59173138524?text=Mira este producto: {{ producto.nombre }} - Bs. {{ producto.precio }}" 
+                       target="_blank" class="btn btn-outline-success btn-sm">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-link"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comentarios y Reseñas -->
+    <div class="mt-5" id="seccion-comentarios">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-comments"></i> Comentarios y Reseñas
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Formulario para agregar comentario (solo usuarios registrados) -->
+                {% if session.user_id %}
+                <div class="mb-4" id="form-comentario">
+                    <h5 class="fw-bold mb-3">Deja tu comentario</h5>
+                    <form id="form-nuevo-comentario">
+                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                        
+                        <div class="mb-3">
+                        <label class="form-label fw-bold">Calificación:</label>
+                        <div class="rating-input">
+                        <input type="radio" name="calificacion" value="5" id="star5" class="star-input">
+                        <label for="star5" class="star"><i class="fas fa-star"></i></label>
+                        <input type="radio" name="calificacion" value="4" id="star4" class="star-input">
+                        <label for="star4" class="star"><i class="fas fa-star"></i></label>
+                        <input type="radio" name="calificacion" value="3" id="star3" class="star-input">
+                        <label for="star3" class="star"><i class="fas fa-star"></i></label>
+                        <input type="radio" name="calificacion" value="2" id="star2" class="star-input">
+                        <label for="star2" class="star"><i class="fas fa-star"></i></label>
+                        <input type="radio" name="calificacion" value="1" id="star1" class="star-input">
+                        <label for="star1" class="star"><i class="fas fa-star"></i></label>
+                            </div>
+                            <style>
+                                .rating-input .star-input {
+                                    display: none;
+                                }
+                                .rating-input .star {
+                                    cursor: pointer;
+                                    color: #ccc;
+                                    font-size: 1.5em;
+                                }
+                                .rating-input .star-input:checked ~ .star,
+                                .rating-input .star-input:checked + .star {
+                                    color: #ffc107;
+                                }
+                                .rating-input .star:hover,
+                                .rating-input .star:hover ~ .star {
+                                    color: #ffc107;
+                                }
+                            </style>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tu comentario:</label>
+                            <textarea class="form-control" name="comentario" rows="3" 
+                                      maxlength="250" placeholder="Comparte tu experiencia con este producto..."></textarea>
+                            <div class="form-text">Máximo 250 caracteres</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Enviar Comentario
+                        </button>
+                    </form>
+                </div>
+                <hr>
+                {% else %}
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle"></i>
+                    <a href="{{ url_for('login') }}">Inicia sesión</a> para dejar tu comentario y calificación.
+                </div>
+                {% endif %}
+
+                <!-- Lista de Comentarios -->
+                {% if comentarios %}
+                <div class="comentarios-lista">
+                    {% for comentario in comentarios %}
+                    <div class="comentario-item border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ comentario.usuario_nombre }}</h6>
+                                <div class="estrellas mb-1">
+                                    {% for i in range(1, 6) %}
+                                        <i class="fas fa-star {% if i <= comentario.calificacion %}text-warning{% else %}text-muted{% endif %} small"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                {% if comentario.fecha %}
+                                {{ comentario.fecha.split(' ')[0].split('-')[2] }}/{{ comentario.fecha.split(' ')[0].split('-')[1] }}/{{ comentario.fecha.split(' ')[0].split('-')[0] }}
+                            {% else %}
+                                Fecha no disponible
+                            {% endif %}
+                            </small>
+                        </div>
+                        <p class="mb-0">{{ comentario.comentario }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comments fa-3x mb-3"></i>
+                    <p>Aún no hay comentarios para este producto.</p>
+                    {% if session.user_id %}
+                    <p>¡Sé el primero en compartir tu experiencia!</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos Relacionados -->
+    {% if relacionados %}
+    <div class="mt-5" id="productos-relacionados">
+        <h3 class="fw-bold mb-4">
+            <i class="fas fa-tags text-primary"></i> Productos Relacionados
+        </h3>
+        
+        <div class="row g-4">
+            {% for producto_rel in relacionados %}
+            <div class="col-lg-3 col-md-6">
+                <div class="card producto-card h-100 shadow-sm">
+                    <img src="{{ producto_rel.imagen }}" 
+                         class="card-img-top producto-imagen" 
+                         alt="{{ producto_rel.nombre }}">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">{{ producto_rel.nombre }}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-primary fw-bold mb-0">
+                                Bs. {{ "%.2f"|format(producto_rel.precio) }}
+                            </h6>
+                            <div class="btn-group">
+                                <a href="{{ url_for('detalle_producto', producto_id=producto_rel.id) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button onclick="agregarAlCarrito({{ producto_rel.id }})" 
+                                        class="btn btn-primary btn-sm">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Cambiar cantidad
+function cambiarCantidad(delta) {
+    const cantidadInput = document.getElementById('cantidad');
+    const nuevaCantidad = parseInt(cantidadInput.value) + delta;
+    
+    if (nuevaCantidad >= 1 && nuevaCantidad <= 10) {
+        cantidadInput.value = nuevaCantidad;
+    }
+}
+
+// Agregar al carrito
+document.getElementById('form-agregar-carrito').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/agregar_carrito', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Agregado!',
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+            actualizarContadorCarrito();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al agregar el producto'
+        });
+    });
+});
+
+// Agregar comentario
+{% if session.user_id %}
+document.getElementById('form-nuevo-comentario').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    // Validar que se haya seleccionado una calificación
+    if (!formData.get('calificacion')) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Calificación requerida',
+            text: 'Por favor selecciona una calificación con las estrellas'
+        });
+        return;
+    }
+    
+    fetch('/agregar_comentario', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Comentario enviado!',
+                text: data.message
+            }).then(() => {
+                location.reload(); // Recargar para mostrar el comentario
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al enviar el comentario'
+        });
+    });
+});
+{% endif %}
+
+// Función para agregar productos relacionados al carrito
+function agregarAlCarrito(productoId) {
+    const formData = new FormData();
+    formData.append('producto_id', productoId);
+    formData.append('cantidad', 1);
+    
+    fetch('/agregar_carrito', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Agregado!',
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+            actualizarContadorCarrito();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al agregar el producto'
+        });
+    });
+}
+</script>
+{% endblock %}

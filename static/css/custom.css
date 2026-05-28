@@ -1,0 +1,558 @@
+/* ========================================
+   TIENDA DE ROPA ONLINE - ESTILOS PERSONALIZADOS
+   Gradientes modernos y efectos elegantes
+   ======================================== */
+
+/* Variables CSS para colores */
+:root {
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-info: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --gradient-danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    --gradient-blue: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-pink: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-green: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-orange: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --gradient-purple: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+    
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ========================================
+   LAYOUT GENERAL
+   ======================================== */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    padding-top: 80px; /* Espacio para navbar fijo */
+    min-height: 100vh;
+}
+
+/* ========================================
+   GRADIENTES PARA BACKGROUNDS
+   ======================================== */
+
+.bg-gradient-primary { background: var(--gradient-primary) !important; }
+.bg-gradient-success { background: var(--gradient-success) !important; }
+.bg-gradient-info { background: var(--gradient-info) !important; }
+.bg-gradient-warning { background: var(--gradient-warning) !important; }
+.bg-gradient-danger { background: var(--gradient-danger) !important; }
+.bg-gradient-blue { background: var(--gradient-blue) !important; }
+.bg-gradient-pink { background: var(--gradient-pink) !important; }
+.bg-gradient-green { background: var(--gradient-green) !important; }
+.bg-gradient-orange { background: var(--gradient-orange) !important; }
+.bg-gradient-purple { background: var(--gradient-purple) !important; }
+
+/* ========================================
+   NAVBAR MODERNO
+   ======================================== */
+
+.navbar-dark {
+    background: var(--gradient-primary) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-medium);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin: 0 4px;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   CARDS MODERNOS CON EFECTOS
+   ======================================== */
+
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.4s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-large);
+}
+
+.card-header {
+    border-bottom: none;
+    border-radius: 16px 16px 0 0 !important;
+    font-weight: 600;
+}
+
+/* ========================================
+   PRODUCTOS - CARDS ESPECIALES
+   ======================================== */
+
+.producto-card {
+    border-radius: 20px;
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.producto-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.producto-imagen {
+    height: 250px;
+    object-fit: cover;
+    transition: all 0.4s ease;
+    border-radius: 20px 20px 0 0;
+}
+
+.producto-imagen:hover {
+    transform: scale(1.05);
+}
+
+.producto-imagen-grande {
+    height: 500px;
+    object-fit: cover;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.producto-imagen-grande:hover {
+    transform: scale(1.03);
+}
+
+/* ========================================
+   CATEGORÍAS - CARDS CON GRADIENTES
+   ======================================== */
+
+.categoria-card {
+    border: none;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.categoria-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.categoria-card:hover::before {
+    opacity: 1;
+}
+
+.categoria-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* ========================================
+   BOTONES MODERNOS
+   ======================================== */
+
+.btn {
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    border: none;
+}
+
+.btn-success {
+    background: var(--gradient-success);
+    border: none;
+}
+
+.btn-info {
+    background: var(--gradient-info);
+    border: none;
+}
+
+.btn-warning {
+    background: var(--gradient-warning);
+    border: none;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
+.hero-section {
+    background: var(--gradient-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 1000,100 1000,0"/></svg>') no-repeat;
+    background-size: cover;
+}
+
+/* ========================================
+   FORMULARIOS ELEGANTES
+   ======================================== */
+
+.form-control, .form-select {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    padding: 12px 16px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+    transform: translateY(-1px);
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+/* ========================================
+   ALERTS Y NOTIFICACIONES
+   ======================================== */
+
+.alert {
+    border: none;
+    border-radius: 16px;
+    border-left: 4px solid;
+    box-shadow: var(--shadow-soft);
+}
+
+.alert-success { border-left-color: #28a745; }
+.alert-danger { border-left-color: #dc3545; }
+.alert-warning { border-left-color: #ffc107; }
+.alert-info { border-left-color: #17a2b8; }
+
+/* ========================================
+   TABLAS MODERNAS
+   ======================================== */
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+}
+
+.table thead th {
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 16px;
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    transform: scale(1.01);
+}
+
+/* ========================================
+   BADGES Y ETIQUETAS
+   ======================================== */
+
+.badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+/* ========================================
+   SISTEMA DE CALIFICACIONES
+   ======================================== */
+
+.estrellas i {
+    font-size: 1.2em;
+    margin-right: 2px;
+    transition: all 0.2s ease;
+}
+
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: #ffc107;
+    transform: scale(1.1);
+}
+
+/* ========================================
+   CARRITO Y CHECKOUT
+   ======================================== */
+
+.sticky-top {
+    top: 100px !important;
+}
+
+.carrito-item {
+    transition: all 0.3s ease;
+}
+
+.carrito-item:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+/* ========================================
+   FOOTER MODERNO
+   ======================================== */
+
+#footer-tienda {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    margin-top: 80px;
+}
+
+#footer-tienda a {
+    transition: all 0.3s ease;
+}
+
+#footer-tienda a:hover {
+    transform: translateY(-2px);
+    color: #667eea !important;
+}
+
+/* ========================================
+   ANIMACIONES Y EFECTOS ESPECIALES
+   ======================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* ========================================
+   LOADING Y ESTADOS
+   ======================================== */
+
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* ========================================
+   RESPONSIVIDAD MEJORADA
+   ======================================== */
+
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 70px;
+    }
+    
+    .hero-section {
+        padding: 40px 0 !important;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .producto-imagen {
+        height: 200px;
+    }
+    
+    .producto-imagen-grande {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-group .btn {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+    }
+    
+    .categoria-card .card-body {
+        padding: 20px 10px;
+    }
+    
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+}
+
+/* ========================================
+   UTILIDADES ADICIONALES
+   ======================================== */
+
+.text-gradient-primary {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
+.rounded-xl { border-radius: 20px !important; }
+.rounded-2xl { border-radius: 24px !important; }
+
+/* ========================================
+   DARK MODE SUPPORT (OPCIONAL)
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .card {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+    
+    .form-control, .form-select {
+        background-color: #3d3d3d;
+        border-color: #555;
+        color: #fff;
+    }
+    
+    .table {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+}
+
+/* ========================================
+   PERSONALIZACIÓN DRIVER.JS
+   ======================================== */
+
+.driver-popover {
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-large) !important;
+}
+
+.driver-popover .driver-popover-title {
+    font-weight: 700 !important;
+    color: #667eea !important;
+}
+
+.driver-popover .driver-popover-footer button {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}

@@ -1,0 +1,668 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Administrativo - Moda Bolivia{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4" id="admin-panel">
+    <!-- Header del Admin -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="fw-bold mb-1">
+                                <i class="fas fa-tachometer-alt"></i> Panel Administrativo
+                            </h2>
+                            <p class="mb-0">Gestión completa de Moda Bolivia</p>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="mb-0">¡Bienvenido, {{ session.user_name }}!</h4>
+                            <small>Administrador del sistema</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-4 mb-4" id="estadisticas-admin">
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-gradient-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Productos</h6>
+                            <h2 class="fw-bold">{{ total_productos }}</h2>
+                            <small>Productos activos</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-boxes fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-gradient-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Órdenes</h6>
+                            <h2 class="fw-bold">{{ total_ordenes }}</h2>
+                            <small>Pedidos recibidos</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-gradient-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Comentarios Pendientes</h6>
+                            <h2 class="fw-bold">{{ comentarios_pendientes }}</h2>
+                            <small>Por moderar</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card bg-gradient-purple text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Estado</h6>
+                            <h4 class="fw-bold">Online</h4>
+                            <small>Sistema operativo</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-server fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Panel de Gestión -->
+        <div class="col-lg-8">
+            <!-- Acciones Rápidas -->
+            <div class="card shadow-sm mb-4" id="acciones-rapidas">
+                <div class="card-header bg-light">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-bolt text-warning"></i> Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" onclick="mostrarFormProducto()">
+                                <i class="fas fa-plus-circle"></i><br>
+                                <small>Agregar Producto</small>
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-success w-100" onclick="verProductos()">
+                                <i class="fas fa-list"></i><br>
+                                <small>Ver Productos</small>
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-info w-100" onclick="verOrdenes()">
+                                <i class="fas fa-shopping-cart"></i><br>
+                                <small>Ver Órdenes</small>
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-warning w-100" onclick="moderarComentarios()">
+                                <i class="fas fa-comments"></i><br>
+                                <small>Moderar</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reportes y Análisis -->
+            <div class="card shadow-sm mb-4" id="reportes-analisis">
+                <div class="card-header bg-light">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-chart-bar text-info"></i> Reportes y Análisis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="/admin/uat-results" class="btn btn-outline-info w-100 text-decoration-none">
+                                <i class="fas fa-chart-line"></i><br>
+                                <small>Dashboard UAT</small>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-secondary w-100" disabled>
+                                <i class="fas fa-chart-pie"></i><br>
+                                <small>Reportes Ventas</small><br>
+                                <small class="text-muted">(Próximamente)</small>
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-secondary w-100" disabled>
+                                <i class="fas fa-warehouse"></i><br>
+                                <small>Análisis Inventario</small><br>
+                                <small class="text-muted">(Próximamente)</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos Recientes -->
+            <div class="card shadow-sm" id="productos-recientes">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-clock text-primary"></i> Productos Recientes
+                    </h5>
+                    <button class="btn btn-outline-primary btn-sm" onclick="verTodosProductos()">
+                        Ver todos
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if productos_recientes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in productos_recientes %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if producto.imagen %}
+                                            <img src="{{ producto.imagen }}" 
+                                                 alt="{{ producto.nombre }}" 
+                                                 class="rounded me-2"
+                                                 style="width: 40px; height: 40px; object-fit: cover;"
+                                                 onerror="this.src='/static/images/placeholder.png'">
+                                            {% else %}
+                                            <div class="rounded me-2 bg-light d-flex align-items-center justify-content-center" 
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <span class="fw-bold">{{ producto.nombre }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ producto.categoria_nombre }}</span>
+                                    </td>
+                                    <td class="fw-bold text-success">
+                                        Bs. {{ "%.2f"|format(producto.precio) }}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ producto.fecha_creacion.strftime('%d/%m/%Y') if producto.fecha_creacion }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" 
+                                                    onclick="editarProducto({{ producto.id }})"
+                                                    title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" 
+                                                    onclick="eliminarProducto({{ producto.id }})"
+                                                    title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-box-open fa-3x mb-3"></i>
+                        <p>No hay productos registrados aún</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Órdenes Recientes -->
+            <div class="card shadow-sm mb-4" id="ordenes-recientes">
+                <div class="card-header bg-light">
+                    <h6 class="fw-bold mb-0">
+                        <i class="fas fa-shopping-bag text-info"></i> Órdenes Recientes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if ordenes_recientes %}
+                    <div class="list-group list-group-flush">
+                        {% for orden in ordenes_recientes %}
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Orden #{{ orden.id }}</h6>
+                                    <p class="mb-1 text-muted small">{{ orden.nombre_cliente }}</p>
+                                    <small class="text-muted">
+                                        {{ orden.fecha.strftime('%d/%m/%Y %H:%M') if orden.fecha }}
+                                    </small>
+                                    <p class="mb-0"><strong>Método de Pago:</strong> 
+                                        <span class="badge bg-secondary">{{ orden.metodo_pago|title }}</span>
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fw-bold text-success">
+                                        Bs. {{ "%.2f"|format(orden.total) }}
+                                    </span>
+                                    <br>
+                                    <form action="{{ url_for('actualizar_orden', orden_id=orden.id) }}" method="POST" style="display:inline;">
+                                        <select name="estado" class="form-select form-select-sm mb-2" onchange="this.form.submit()">
+                                            <option value="pendiente" {% if orden.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                            <option value="pagado" {% if orden.estado == 'pagado' %}selected{% endif %}>Pagado</option>
+                                            <option value="enviado" {% if orden.estado == 'enviado' %}selected{% endif %}>Enviado</option>
+                                            <option value="completado" {% if orden.estado == 'completado' %}selected{% endif %}>Completado</option>
+                                            <option value="cancelado" {% if orden.estado == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                                        </select>
+                                    </form>
+                                    <span class="badge bg-{{ 'warning' if orden.estado == 'pendiente' else 'success' if orden.estado in ['pagado', 'completado'] else 'danger' if orden.estado == 'cancelado' else 'info' }}">
+                                        {{ orden.estado|title }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-info btn-sm" onclick="verTodasOrdenes()">
+                            Ver todas las órdenes
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                        <p class="mb-0">No hay órdenes aún</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="card shadow-sm" id="info-sistema">
+                <div class="card-header bg-light">
+                    <h6 class="fw-bold mb-0">
+                        <i class="fas fa-info-circle text-primary"></i> Información del Sistema
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <strong>Versión:</strong> Demo Educativo v1.0
+                        </li>
+                        <li class="mb-2">
+                            <strong>Base de datos:</strong> SQLite
+                        </li>
+                        <li class="mb-2">
+                            <strong>Servidor:</strong> Render (Demo)
+                        </li>
+                        <li class="mb-2">
+                            <strong>Ubicación:</strong> Santa Cruz, Bolivia
+                        </li>
+                        <li class="mb-0">
+                            <strong>WhatsApp:</strong> +591 73138524
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-3 p-2 bg-warning bg-opacity-25 rounded">
+                        <small class="text-warning-emphasis">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            <strong>Nota:</strong> Los datos se reinicia en cada deploy de Render.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Agregar/Editar Producto -->
+<div class="modal fade" id="modalProducto" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus-circle"></i> <span id="modal-titulo">Agregar Producto</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-producto" enctype="multipart/form-data">
+                    <input type="hidden" id="producto-id" name="producto_id">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre del Producto *</label>
+                            <input type="text" class="form-control" id="producto-nombre" 
+                                   name="nombre" required placeholder="Nombre del producto">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Categoría *</label>
+                            <select class="form-select" id="producto-categoria" name="categoria_id" required>
+                                <option value="">Seleccionar categoría</option>
+                                <!-- Las opciones se cargarán dinámicamente -->
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Precio (Bs.) *</label>
+                            <input type="number" class="form-control" id="producto-precio" 
+                                   name="precio" step="0.01" min="0" required 
+                                   placeholder="0.00">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Stock</label>
+                            <input type="number" class="form-control" id="producto-stock" 
+                                   name="stock" min="0" value="100" 
+                                   placeholder="Cantidad disponible">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Descripción</label>
+                            <textarea class="form-control" id="producto-descripcion" 
+                                      name="descripcion" rows="3" 
+                                      placeholder="Descripción del producto"></textarea>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Imagen del Producto</label>
+                            <input type="file" class="form-control" id="producto-imagen" 
+                                   name="imagen" accept=".jpg,.jpeg,.png,.gif,.webp">
+                            <div class="form-text">Formatos permitidos: JPG, JPEG, PNG, GIF, WebP (máx. 16MB)</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="guardarProducto()">
+                    <i class="fas fa-save"></i> Guardar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Variables globales
+let categorias = [];
+
+// Funciones para las acciones rápidas
+function mostrarFormProducto() {
+    document.getElementById('modal-titulo').textContent = 'Agregar Producto';
+    document.getElementById('form-producto').reset();
+    document.getElementById('producto-id').value = '';
+    cargarCategorias();
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalProducto'));
+    modal.show();
+}
+
+function verProductos() {
+    window.location.href = '/productos';
+}
+
+function verOrdenes() {
+    window.location.href = '/ordenes';
+}
+
+function moderarComentarios() {
+    window.location.href = '/moderar';
+}
+
+function cargarCategorias() {
+    fetch('/api/categorias')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                categorias = data.categorias;
+                const select = document.getElementById('producto-categoria');
+                select.innerHTML = '<option value="">Seleccionar categoría</option>';
+                
+                data.categorias.forEach(categoria => {
+                    const option = document.createElement('option');
+                    option.value = categoria.id;
+                    option.textContent = `${categoria.tipo.charAt(0).toUpperCase() + categoria.tipo.slice(1)} - ${categoria.nombre}`;
+                    select.appendChild(option);
+                });
+            } else {
+                console.error('Error cargando categorías:', data.error);
+                // Fallback con categorías hardcodeadas
+                const select = document.getElementById('producto-categoria');
+                select.innerHTML = `
+                    <option value="">Seleccionar categoría</option>
+                    <option value="1">Hombres - Camisas</option>
+                    <option value="2">Hombres - Pantalones</option>
+                    <option value="3">Hombres - Polos</option>
+                    <option value="4">Hombres - Chaquetas</option>
+                    <option value="5">Hombres - Accesorios</option>
+                    <option value="6">Mujeres - Blusas</option>
+                    <option value="7">Mujeres - Pantalones</option>
+                    <option value="8">Mujeres - Vestidos</option>
+                    <option value="9">Mujeres - Chaquetas</option>
+                    <option value="10">Mujeres - Accesorios</option>
+                    <option value="11">Niños - Ropa Casual</option>
+                    <option value="12">Niños - Ropa Formal</option>
+                    <option value="13">Niños - Chaquetas</option>
+                    <option value="14">Niños - Accesorios</option>
+                    <option value="15">Ofertas</option>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function editarProducto(id) {
+    document.getElementById('modal-titulo').textContent = 'Editar Producto';
+    document.getElementById('form-producto').reset();
+    document.getElementById('producto-id').value = id;
+
+    // Cargar datos del producto
+    fetch(`/api/productos/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const producto = data.producto;
+                document.getElementById('producto-nombre').value = producto.nombre || '';
+                document.getElementById('producto-descripcion').value = producto.descripcion || '';
+                document.getElementById('producto-precio').value = producto.precio || '';
+                document.getElementById('producto-stock').value = producto.stock || 100;
+                document.getElementById('producto-categoria').value = producto.categoria_id || '';
+                cargarCategorias(); // Asegura que las categorías estén cargadas
+                const modal = new bootstrap.Modal(document.getElementById('modalProducto'));
+                modal.show();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error || 'No se pudo cargar el producto'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor'
+            });
+        });
+}
+
+function guardarProducto() {
+    const form = document.getElementById('form-producto');
+    const formData = new FormData(form);
+    const productoId = document.getElementById('producto-id').value;
+    const url = productoId ? `/api/productos/${productoId}` : '/api/productos';
+    const method = productoId ? 'PUT' : 'POST';
+
+    Swal.fire({
+        title: 'Guardando...',
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false
+    });
+
+    fetch(url, {
+        method: method,
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Guardado!',
+                text: data.message,
+                timer: 3000
+            }).then(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalProducto'));
+                modal.hide();
+                window.location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.error || 'No se pudo guardar'
+            });
+        }
+    })
+    .catch(error => {
+        Swal.close();
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor'
+        });
+    });
+}
+
+function eliminarProducto(id) {
+    Swal.fire({
+        title: '¿Eliminar producto?',
+        text: 'Esta acción desactivará el producto (no se puede deshacer)',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Eliminando producto...',
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                allowOutsideClick: false
+            });
+            
+            // Hacer petición DELETE al API
+            fetch(`/api/productos/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Producto eliminado',
+                        text: data.message,
+                        timer: 2000
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error || 'No se pudo eliminar el producto'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor'
+                });
+            });
+        }
+    });
+}
+
+// Funciones para los botones de navegación
+function verTodosProductos() {
+    verProductos();
+}
+
+function verTodasOrdenes() {
+    verOrdenes();
+}
+</script>
+
+<style>
+.bg-gradient-purple {
+    background: linear-gradient(45deg, #6f42c1, #9c27b0) !important;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease-in-out;
+}
+</style>
+{% endblock %}

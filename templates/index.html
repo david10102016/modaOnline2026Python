@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+
+{% block title %}Tienda de Ropa - Moda Bolivia | Santa Cruz{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Hero Section -->
+    <section class="hero-section bg-gradient-primary text-white py-5 mb-5" id="hero-section">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4" id="hero-titulo">
+                        La Moda que Buscas en Santa Cruz
+                    </h1>
+                    <p class="lead mb-4">
+                        Descubre nuestra colección de ropa para toda la familia. 
+                        Calidad, estilo y los mejores precios en el corazón de Equipetrol.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="#productos-destacados" class="btn btn-light btn-lg">
+                            <i class="fas fa-shopping-bag"></i> Ver Productos
+                        </a>
+                        <a href="https://wa.me/59173138524" class="btn btn-outline-light btn-lg" target="_blank">
+                            <i class="fab fa-whatsapp"></i> Contáctanos
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div id="hero-slide" class="hero-slide">
+                        <img src="{{ url_for('static', filename='images/slides/slide1.jpg') }}" 
+                             alt="Moda Bolivia" class="hero-image" style="opacity: 1;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorías Rápidas -->
+    <section class="container mb-5" id="categorias-rapidas">
+        <h2 class="text-center mb-4 fw-bold">
+            <i class="fas fa-th-large text-primary"></i> Compra por Categoría
+        </h2>
+        
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <a href="{{ url_for('buscar', categoria='hombres') }}" 
+                   class="text-decoration-none">
+                    <div class="card categoria-card bg-gradient-blue h-100 text-white">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-male fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Hombres</h5>
+                            <p class="card-text">{{ productos_organizados.hombres|length }} productos</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <a href="{{ url_for('buscar', categoria='mujeres') }}" 
+                   class="text-decoration-none">
+                    <div class="card categoria-card bg-gradient-pink h-100 text-white">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-female fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Mujeres</h5>
+                            <p class="card-text">{{ productos_organizados.mujeres|length }} productos</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <a href="{{ url_for('buscar', categoria='ninos') }}" 
+                   class="text-decoration-none">
+                    <div class="card categoria-card bg-gradient-green h-100 text-white">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-child fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Niños</h5>
+                            <p class="card-text">{{ productos_organizados.ninos|length }} productos</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <a href="{{ url_for('buscar', categoria='ofertas') }}" 
+                   class="text-decoration-none">
+                    <div class="card categoria-card bg-gradient-orange h-100 text-white">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-fire fa-3x mb-3"></i>
+                            <h5 class="card-title fw-bold">Ofertas</h5>
+                            <p class="card-text">{{ productos_organizados.ofertas|length }} productos</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos Destacados -->
+    <section class="container mb-5" id="productos-destacados">
+        <h2 class="text-center mb-4 fw-bold">
+            <i class="fas fa-star text-warning"></i> Productos Destacados
+        </h2>
+        
+        <!-- Ofertas Especiales -->
+        {% if productos_organizados.ofertas %}
+        <div class="mb-5">
+            <h3 class="h4 mb-3 text-danger">
+                <i class="fas fa-fire"></i> Ofertas Especiales
+            </h3>
+            <div class="row g-4">
+                {% for producto in productos_organizados.ofertas %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card producto-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ producto.imagen }}" 
+                                 class="card-img-top producto-imagen" 
+                                 alt="{{ producto.nombre }}">
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                <i class="fas fa-fire"></i> OFERTA
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ producto.nombre }}</h5>
+                            <p class="card-text text-muted">{{ producto.descripcion[:100] }}...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="text-primary fw-bold mb-0">
+                                    Bs. {{ "%.2f"|format(producto.precio) }}
+                                </h4>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('detalle_producto', producto_id=producto.id) }}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button onclick="agregarAlCarrito({{ producto.id }})" 
+                                            class="btn btn-primary btn-sm">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Productos por Categoría -->
+        {% for categoria, productos in productos_organizados.items() %}
+            {% if categoria != 'ofertas' and productos %}
+            <div class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h4 mb-0">
+                        {% if categoria == 'hombres' %}
+                            <i class="fas fa-male text-primary"></i> Para Hombres
+                        {% elif categoria == 'mujeres' %}
+                            <i class="fas fa-female text-danger"></i> Para Mujeres
+                        {% else %}
+                            <i class="fas fa-child text-warning"></i> Para Niños
+                        {% endif %}
+                    </h3>
+                    <a href="{{ url_for('buscar', categoria=categoria) }}" 
+                       class="btn btn-outline-secondary btn-sm">
+                        Ver todos <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="row g-4">
+                    {% for producto in productos[:6] %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card producto-card h-100 shadow-sm">
+                            <img src="{{ producto.imagen }}" 
+                                 class="card-img-top producto-imagen" 
+                                 alt="{{ producto.nombre }}">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold">{{ producto.nombre }}</h5>
+                                <p class="card-text text-muted">{{ producto.descripcion[:80] }}...</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="text-primary fw-bold mb-0">
+                                        Bs. {{ "%.2f"|format(producto.precio) }}
+                                    </h5>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('detalle_producto', producto_id=producto.id) }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button onclick="agregarAlCarrito({{ producto.id }})" 
+                                                class="btn btn-primary btn-sm">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </section>
+
+    <!-- Información de la Tienda -->
+    <section class="bg-light py-5" id="info-tienda">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold mb-3">
+                        <i class="fas fa-map-marker-alt text-primary"></i> 
+                        Visítanos en Equipetrol
+                    </h3>
+                    <p class="lead mb-4">
+                        Nos encontramos en el corazón comercial de Santa Cruz de la Sierra, 
+                        en la prestigiosa zona de Equipetrol. Ven y descubre nuestra colección completa.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                <span>Av. San Martín, Equipetrol</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-whatsapp text-success me-2"></i>
+                                <span>+591 73138524</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock text-info me-2"></i>
+                                <span>Lun - Sáb: 9:00 - 20:00</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-truck text-warning me-2"></i>
+                                <span>Entregas en toda la ciudad</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div id="store-slide" class="store-slide">
+                        <img src="{{ url_for('static', filename='images/slides/slide1.jpg') }}" 
+                             alt="Nuestra tienda en Equipetrol" class="store-image" style="opacity: 1;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nueva Sección: Ubicación y Comentarios -->
+    <section id="location-section" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Ubicación</h3>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30163.298269524!2d-63.1820!3d-17.7833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93f0a2e5e5e5e5e5%3A0x1234567890abcdef!2sEquipetrol%2C%20Santa%20Cruz%20de%20la%20Sierra!5e0!3m2!1ses!2sbo!4v1695555555!5m2!1ses!2sbo" 
+                            width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                <div class="col-md-6">
+                    <h3>Comentarios sobre nuestra tienda</h3>
+                    <ul id="main-comments" class="list-unstyled"></ul>
+                    {% if session.user_id %}
+                    <div class="mt-3" id="comment-section">
+                        <textarea id="comment-text" class="form-control mb-2" maxlength="250" placeholder="Escribe tu comentario sobre nuestra tienda..." required></textarea>
+                        <div class="rating mb-2" id="star-rating">
+                            <i class="fas fa-star" data-value="1"></i>
+                            <i class="fas fa-star" data-value="2"></i>
+                            <i class="fas fa-star" data-value="3"></i>
+                            <i class="fas fa-star" data-value="4"></i>
+                            <i class="fas fa-star" data-value="5"></i>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitComment()">Enviar Comentario</button>
+                    </div>
+                    {% else %}
+                    <div class="mt-3">
+                        <p>Inicia sesión o regístrate para comentar sobre nuestra tienda.</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm me-2">Iniciar Sesión</a>
+                        <a href="{{ url_for('registro') }}" class="btn btn-outline-success btn-sm">Registrarse</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+function agregarAlCarrito(productoId) {
+    const formData = new FormData();
+    formData.append('producto_id', productoId);
+    formData.append('cantidad', 1);
+    
+    fetch('/agregar_carrito', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Agregado!',
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+            actualizarContadorCarrito();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al agregar el producto'
+        });
+    });
+}
+
+// Rotación de imágenes en Hero
+const heroImages = [
+    "{{ url_for('static', filename='images/slides/slide1.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide2.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide3.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide4.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide5.jpg') }}"
+];
+let heroIndex = 0;
+const heroImage = document.querySelector('#hero-slide img');
+heroImage.onload = () => heroImage.style.opacity = '1';
+setInterval(() => {
+    heroImage.style.opacity = '0';
+    setTimeout(() => {
+        heroIndex = (heroIndex + 1) % 5;
+        heroImage.src = heroImages[heroIndex];
+    }, 500);
+}, 3000);
+
+// Rotación de imágenes en Tienda
+const storeImages = [
+    "{{ url_for('static', filename='images/slides/slide1.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide2.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide3.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide4.jpg') }}",
+    "{{ url_for('static', filename='images/slides/slide5.jpg') }}"
+];
+let storeIndex = 0;
+const storeImage = document.querySelector('#store-slide img');
+storeImage.onload = () => storeImage.style.opacity = '1';
+setInterval(() => {
+    storeImage.style.opacity = '0';
+    setTimeout(() => {
+        storeIndex = (storeIndex + 1) % 5;
+        storeImage.src = storeImages[storeIndex];
+    }, 500);
+}, 3000);
+
+// Sistema de calificación con estrellas
+let selectedRating = 0;
+document.querySelectorAll('#star-rating .fas.fa-star').forEach(star => {
+    star.addEventListener('click', () => {
+        selectedRating = parseInt(star.getAttribute('data-value'));
+        updateStarRating();
+    });
+    star.addEventListener('mouseover', () => {
+        const value = parseInt(star.getAttribute('data-value'));
+        document.querySelectorAll('#star-rating .fas.fa-star').forEach(s => s.classList.remove('text-warning'));
+        for (let i = 1; i <= value; i++) {
+            document.querySelector(`#star-rating .fas.fa-star[data-value="${i}"]`).classList.add('text-warning');
+        }
+    });
+    star.addEventListener('mouseout', () => {
+        updateStarRating();
+    });
+});
+
+function updateStarRating() {
+    document.querySelectorAll('#star-rating .fas.fa-star').forEach(s => s.classList.remove('text-warning'));
+    for (let i = 1; i <= selectedRating; i++) {
+        document.querySelector(`#star-rating .fas.fa-star[data-value="${i}"]`).classList.add('text-warning');
+    }
+}
+
+// FUNCIÓN CORREGIDA - Envío de comentarios de tienda (SIN producto_id)
+function submitComment() {
+    const text = document.getElementById('comment-text').value.trim();
+    
+    // Validaciones
+    if (!text) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, escribe un comentario.',
+            timer: 2000
+        });
+        return;
+    }
+    
+    if (selectedRating === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error', 
+            text: 'Por favor, selecciona una calificación.',
+            timer: 2000
+        });
+        return;
+    }
+    
+    // Mostrar loading
+    Swal.fire({
+        title: 'Enviando comentario...',
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false
+    });
+    
+    // Preparar datos para enviar (SOLO calificacion y comentario)
+    const formData = new FormData();
+    formData.append('calificacion', selectedRating.toString());
+    formData.append('comentario', text);
+    
+    // Enviar al endpoint de comentarios de tienda
+    fetch('/agregar_comentario_tienda', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        
+        if (data.success) {
+            // Éxito
+            Swal.fire({
+                icon: 'success',
+                title: '¡Comentario enviado!',
+                text: data.message,
+                timer: 3000,
+                showConfirmButton: false
+            });
+            
+            // Limpiar formulario
+            document.getElementById('comment-text').value = '';
+            selectedRating = 0;
+            updateStarRating();
+            
+            // Si el comentario fue aprobado automáticamente (4-5 estrellas), actualizar la vista
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+            
+        } else {
+            // Error del servidor
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'No se pudo enviar el comentario',
+                timer: 3000
+            });
+        }
+    })
+    .catch(error => {
+        Swal.close();
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
+            timer: 3000
+        });
+    });
+}
+
+// FUNCIÓN CORREGIDA - Cargar comentarios de tienda únicamente
+function loadMainComments() {
+    const commentList = document.getElementById('main-comments');
+    if (!commentList) return;
+    
+    // Obtener los comentarios desde el backend (pasados por Jinja2)
+    const comentarios = {{ comentarios_aprobados | tojson | safe }};
+    
+    // Si no hay comentarios
+    if (!comentarios || comentarios.length === 0) {
+        commentList.innerHTML = `
+            <li class="card p-3 mb-2 text-center">
+                <div class="text-muted">
+                    <i class="fas fa-comments fa-2x mb-2"></i>
+                    <p class="mb-0">Aún no hay comentarios sobre nuestra tienda.</p>
+                    <small>¡Sé el primero en comentar!</small>
+                </div>
+            </li>
+        `;
+        return;
+    }
+    
+    // Mostrar los comentarios
+    let html = '';
+    comentarios.forEach(comentario => {
+        const fecha = new Date(comentario.fecha).toLocaleDateString('es-ES');
+        const estrellas = '★'.repeat(comentario.puntuacion) + '☆'.repeat(5 - comentario.puntuacion);
+        
+        html += `
+            <li class="card p-3 mb-2">
+                <div class="d-flex align-items-start">
+                    <div class="me-3">
+                        <div class="text-warning mb-1">${estrellas}</div>
+                        <small class="text-muted">${fecha}</small>
+                    </div>
+                    <div class="flex-grow-1">
+                        <strong>${comentario.usuario_nombre}</strong>
+                        <p class="mb-1">${comentario.comentario}</p>
+                    </div>
+                </div>
+            </li>
+        `;
+    });
+    
+    commentList.innerHTML = html;
+}
+
+// Inicializar cuando se carga la página
+document.addEventListener('DOMContentLoaded', function() {
+    updateStarRating();
+    loadMainComments();
+});
+</script>
+
+<style>
+.hero-slide {
+    position: relative;
+    max-width: 300px;
+    margin: auto;
+}
+.hero-image {
+    width: 100%;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: opacity 0.5s;
+    opacity: 0;
+}
+
+.store-slide {
+    position: relative;
+    text-align: center;
+}
+.store-image {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: opacity 0.5s;
+    opacity: 0;
+}
+
+#star-rating .fas.fa-star {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #ccc;
+    transition: color 0.2s ease;
+}
+#star-rating .fas.fa-star.text-warning {
+    color: #ffc107 !important;
+}
+#star-rating .fas.fa-star:hover {
+    color: #ffc107;
+}
+
+.star-rating {
+    display: inline-flex;
+    align-items: center;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard UAT - Admin | Moda Bolivia{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold text-primary">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Dashboard UAT (User Acceptance Testing)
+                    </h2>
+                    <p class="text-muted mb-0">Análisis de usabilidad y experiencia de usuario</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i> Volver al Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas Principales -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-1">Total Sesiones</h6>
+                            <h3 class="mb-0">{{ total_sessions }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-1">Tasa de Éxito</h6>
+                            <h3 class="mb-0">
+                                {% if total_sessions > 0 %}
+                                    {{ "%.0f"|format((stats.by_success.si / total_sessions) * 100) }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-info text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-1">Tiempo Promedio</h6>
+                            <h3 class="mb-0">{{ "%.1f"|format(stats.avg_time) }}s</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-1">Rating Promedio</h6>
+                            <h3 class="mb-0">{{ "%.1f"|format(stats.avg_rating) }}/5</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-star fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if total_sessions > 0 %}
+    <!-- Gráficos y Estadísticas -->
+    <div class="row mb-4">
+        <!-- Análisis por Escenario -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2 text-primary"></i>
+                        Análisis por Escenario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for scenario, data in stats.by_scenario.items() %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="text-capitalize">{{ scenario.replace('_', ' ') }}</strong>
+                            <span class="badge bg-primary">{{ data.count }} sesiones</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Éxito:</small>
+                                <div class="progress mb-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ (data.success / data.count * 100) if data.count > 0 else 0 }}%"></div>
+                                </div>
+                                <small>{{ "%.0f"|format((data.success / data.count * 100) if data.count > 0 else 0) }}%</small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Tiempo promedio:</small><br>
+                                <small><strong>{{ "%.1f"|format(data.avg_time) }}s</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de Completion -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2 text-success"></i>
+                        Estado de Tareas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="border rounded p-3 mb-2 bg-success bg-opacity-10">
+                                <h4 class="text-success mb-1">{{ stats.by_success.si }}</h4>
+                                <small class="text-muted">Completadas</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-3 mb-2 bg-warning bg-opacity-10">
+                                <h4 class="text-warning mb-1">{{ stats.by_success.parcial }}</h4>
+                                <small class="text-muted">Parciales</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-3 mb-2 bg-danger bg-opacity-10">
+                                <h4 class="text-danger mb-1">{{ stats.by_success.no }}</h4>
+                                <small class="text-muted">Fallidas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Distribución visual -->
+                    <div class="progress mt-3" style="height: 20px;">
+                        <div class="progress-bar bg-success" style="width: {{ (stats.by_success.si / total_sessions * 100) if total_sessions > 0 else 0 }}%" title="Completadas">
+                            {% if stats.by_success.si > 0 %}{{ stats.by_success.si }}{% endif %}
+                        </div>
+                        <div class="progress-bar bg-warning" style="width: {{ (stats.by_success.parcial / total_sessions * 100) if total_sessions > 0 else 0 }}%" title="Parciales">
+                            {% if stats.by_success.parcial > 0 %}{{ stats.by_success.parcial }}{% endif %}
+                        </div>
+                        <div class="progress-bar bg-danger" style="width: {{ (stats.by_success.no / total_sessions * 100) if total_sessions > 0 else 0 }}%" title="Fallidas">
+                            {% if stats.by_success.no > 0 %}{{ stats.by_success.no }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dificultades Reportadas -->
+    {% if stats.common_difficulties %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                        Dificultades Más Reportadas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for difficulty in stats.common_difficulties %}
+                        <div class="col-md-6 mb-2">
+                            <div class="alert alert-warning alert-dismissible fade show py-2" role="alert">
+                                <i class="fas fa-quote-left me-1"></i>
+                                <em>{{ difficulty }}</em>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tabla de Sesiones Detallada -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2 text-info"></i>
+                        Sesiones Detalladas
+                    </h5>
+                    <small class="text-muted">{{ total_sessions }} registros</small>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha/Hora</th>
+                                    <th>Escenario</th>
+                                    <th>Estado</th>
+                                    <th>Tiempo</th>
+                                    <th>Rating</th>
+                                    <th>Usuario</th>
+                                    <th>Dificultades</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in sessions %}
+                                <tr>
+                                    <td>
+                                        <small>
+                                            {% if session.timestamp %}
+                                                {{ session.timestamp[:19].replace('T', ' ') }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary text-capitalize">
+                                            {{ session.scenario.replace('_', ' ') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if session.success == 'si' %}
+                                            <span class="badge bg-success">Completada</span>
+                                        {% elif session.success == 'parcial' %}
+                                            <span class="badge bg-warning">Parcial</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Fallida</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ session.timeSpent }}s</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% for i in range(1, 6) %}
+                                                {% if i <= session.rating %}
+                                                    <i class="fas fa-star text-warning me-1" style="font-size: 0.8em;"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted me-1" style="font-size: 0.8em;"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small class="ms-1">{{ session.rating }}/5</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {% if session.user_session and session.user_session != 'anonymous' %}
+                                                User {{ session.user_session }}
+                                            {% else %}
+                                                Anónimo
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if session.difficulties %}
+                                            <small class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ session.difficulties }}">
+                                                {{ session.difficulties }}
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">-</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Estado vacío -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay datos UAT disponibles</h4>
+                    <p class="text-muted">
+                        Aún no se han registrado sesiones de prueba de usuario.<br>
+                        Los datos aparecerán aquí cuando los usuarios completen las pruebas UAT.
+                    </p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-1"></i> Ir al sitio principal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Actualizar página cada 5 minutos para datos frescos
+setTimeout(function() {
+    location.reload();
+}, 300000);
+
+// Mostrar tooltip en elementos truncados
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar tooltips de Bootstrap si están disponibles
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.progress {
+    border-radius: 6px;
+}
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px);
+}
+.table th {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+.badge {
+    font-weight: 500;
+}
+</style>
+{% endblock %}
