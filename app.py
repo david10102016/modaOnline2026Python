@@ -322,7 +322,7 @@ def carrito():
             ORDER BY c.fecha DESC
         ''', (session_id,)).fetchall()
     
-    total = sum(item['precio_unitario'] * item['cantidad'] for item in items)
+    total = float(sum(float(item['precio_unitario']) * item['cantidad'] for item in items))
     
     conn.close()
     
@@ -396,7 +396,7 @@ def checkout():
         flash('Tu carrito está vacío', 'warning')
         return redirect(url_for('carrito'))
 
-    total = sum(item['precio_unitario'] * item['cantidad'] for item in items)
+    total = float(sum(float(item['precio_unitario']) * item['cantidad'] for item in items))
     
     usuario = None
     if usuario_id:
@@ -450,7 +450,7 @@ def procesar_pedido():
         conn.close()
         return redirect(url_for('carrito'))
 
-    total = sum(item['precio_unitario'] * item['cantidad'] for item in items)
+    total = float(sum(float(item['precio_unitario']) * item['cantidad'] for item in items))
     envio_costo = 20.0 if metodo_entrega == 'envio' else 0.0
     total_con_envio = total + envio_costo
 
