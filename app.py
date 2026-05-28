@@ -559,15 +559,13 @@ def registro():
             return render_template('login.html')
         
         hashed_password = hash_password(password)
-        cursor = conn.cursor()
-        cursor.execute('''
+        cursor = conn.execute('''
             INSERT INTO usuarios (nombre, correo, contraseña, telefono, rol)
             VALUES (?, ?, ?, ?, ?)
         ''', (nombre, correo, hashed_password, telefono, 'usuario'))
         
         user_id = cursor.lastrowid
         conn.commit()
-        cursor.close()
         conn.close()
         
         session['user_id'] = user_id
@@ -1002,9 +1000,7 @@ def crear_producto():
 
         # Insertar en base de datos
         conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
+        cursor = conn.execute('''
             INSERT INTO productos (nombre, descripcion, precio, stock, categoria_id, imagen)
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (
