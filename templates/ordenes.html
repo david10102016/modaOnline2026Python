@@ -129,7 +129,7 @@
                     <input type="checkbox" name="ordenes_seleccionadas" value="{{ o['id'] }}">
                 </div>
                 <div class="order-details">
-                    ID: {{ o['id'] }} - Cliente: {{ o['nombre_cliente'] if o['nombre_cliente'] else 'No especificado' }} - Total: Bs. {{ "%.2f"|format(o['total']) }} - Método: {{ o['metodo_pago']|title if o['metodo_pago'] else 'No especificado' }} - Fecha: {{ o['fecha'][:10] }} - Estado: {{ o['estado']|title if o['estado'] else 'Pendiente' }}
+                    ID: {{ o['id'] }} - Cliente: {{ o['nombre_cliente'] if o['nombre_cliente'] else 'No especificado' }} - Total: Bs. {{ "%.2f"|format(o['total']) }} - Método: {{ o['metodo_pago']|title if o['metodo_pago'] else 'No especificado' }} - Fecha: {{ o['fecha'].strftime('%Y-%m-%d') if o['fecha'] else '' }} - Estado: {{ o['estado']|title if o['estado'] else 'Pendiente' }}
                 </div>
                 <form method="POST" action="{{ url_for('actualizar_orden', orden_id=o['id']) }}" style="margin: 0;">
                     <select name="estado">

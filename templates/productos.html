@@ -104,7 +104,7 @@
                                         <td>{{ p['id'] }}</td>
                                         <td>{{ p['nombre'] }}</td>
                                         <td>{{ "%.2f"|format(p['precio']) }} Bs.</td>
-                                        <td>{{ p['fecha_creacion'][:10] }}</td>
+                                        <td>{{ p['fecha_creacion'].strftime('%Y-%m-%d') if p['fecha_creacion'] else '' }}</td>
                                         <td>
                                             <form action="{{ url_for('editar_producto', producto_id=p['id']) }}" method="get" style="display:inline;">
                                                 <button type="submit" class="btn btn-action edit-link">Editar</button>
