@@ -1043,6 +1043,8 @@ def crear_producto():
         })
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': f'Error al crear producto: {str(e)}'
