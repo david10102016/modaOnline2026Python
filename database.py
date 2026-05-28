@@ -30,7 +30,9 @@ class Cursor:
     @property
     def lastrowid(self):
         self._cur.execute("SELECT lastval()")
-        return self._cur.fetchone()[0]
+        row = self._cur.fetchone()
+        # row es un dict {'lastval': 123}, obtenemos el primer valor
+        return list(row.values())[0]
 
 class _IndexableDict(dict):
     def __getitem__(self, key):
