@@ -8,5 +8,5 @@ blinker==1.9.0
 gunicorn==21.2.0
 bcrypt==4.3.0
 psycopg2-binary==2.9.9
-colorama==0.4.8
+colorama==0.4.6
 packaging==25.0
