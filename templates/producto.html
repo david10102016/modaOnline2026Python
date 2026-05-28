@@ -235,11 +235,7 @@
                                 </div>
                             </div>
                             <small class="text-muted">
-                                {% if comentario.fecha %}
-                                {{ comentario.fecha.split(' ')[0].split('-')[2] }}/{{ comentario.fecha.split(' ')[0].split('-')[1] }}/{{ comentario.fecha.split(' ')[0].split('-')[0] }}
-                            {% else %}
-                                Fecha no disponible
-                            {% endif %}
+                                {{ comentario.fecha.strftime('%d/%m/%Y') if comentario.fecha else 'Fecha no disponible' }}
                             </small>
                         </div>
                         <p class="mb-0">{{ comentario.comentario }}</p>
